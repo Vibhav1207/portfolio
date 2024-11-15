@@ -1,4 +1,4 @@
-"use Cleint";
+"use cleint";
 
 import React, { useEffect, useState } from 'react';
 
