@@ -1,3 +1,5 @@
+"use Cleint";
+
 import React, { useEffect, useState } from 'react';
 
 const Stars = () => {
