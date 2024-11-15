@@ -30,13 +30,25 @@ const SpaceBackground = () => {
 
     const animate = () => {
       requestAnimationFrame(animate);
-      stars.rotation.y += 0.001; // Moving star effect
+      stars.rotation.y += 0.001; // Rotate stars for movement effect
       renderer.render(scene, camera);
     };
 
     animate();
 
+    // Resize event listener
+    const handleResize = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      renderer.setSize(width, height);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    };
+
+    window.addEventListener('resize', handleResize);
+
     return () => {
+      window.removeEventListener('resize', handleResize);
       renderer.dispose();
     };
   }, []);
