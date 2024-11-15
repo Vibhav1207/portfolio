@@ -1,3 +1,5 @@
+// app/page.js
+"use client"; 
 
 import Head from 'next/head';
 import Navbar from './components/Navbar';
@@ -9,7 +11,7 @@ const Home = () => {
     return (
         <>
             <Head>
-                <title> Portfolio</title>
+                <title> Portfolio </title>
                 <meta name="description" content="A brief description of your portfolio." />
                 <meta name="keywords" content="portfolio, web development, projects" />
             </Head>
@@ -20,20 +22,8 @@ const Home = () => {
             <Projects />
             <style jsx>{`
                 body {
-                    background : black;
+                    background: black;
                     overflow: hidden;
-                }
-
-                .star {
-                    position: absolute;
-                    background: white;
-                    border-radius: 50%;
-                    animation: twinkle 1.5s infinite alternate;
-                }
-
-                @keyframes twinkle {
-                    0% { opacity: 0.5; }
-                    100% { opacity: 1; }
                 }
 
                 .blackhole {
