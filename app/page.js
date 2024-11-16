@@ -28,7 +28,7 @@ const Home = () => {
 
                 .blackhole {
                     position: absolute;
-                    top: 20px;
+                    top: 2604px;
                     left: 50%;
                     transform: translateX(-50%);
                     width: 100px;
