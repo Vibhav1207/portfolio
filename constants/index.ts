@@ -9,71 +9,49 @@ import {
 
 export const SKILL_DATA = [
   {
-    skill_name: "HTML",
+    skill_name: "",
     image: "",
     width: 80,
     height: 80,
   },
   {
-    skill_name: "CSS",
+    skill_name: "",
     image: "",
     width: 80,
     height: 80,
   },
   {
-    skill_name: "JavaScript",
+    skill_name: "",
     image: "",
     width: 65,
     height: 65,
   },
   {
-    skill_name: "Tailwind CSS",
+    skill_name: "",
     image: "",
     width: 80,
     height: 80,
   },
   {
-    skill_name: "React",
+    skill_name: "",
     image: "",
     width: 80,
     height: 80,
   },
-  /*{
-    skill_name: "Redux",
-    image: "redux.png",
-    width: 80,
-    height: 80,
-  },
+
   {
-    skill_name: "React Query",
-    image: "reactquery.png",
-    width: 80,
-    height: 80,
-  },*/
-  {
-    skill_name: "TypeScript",
+    skill_name: "",
     image: "",
     width: 80,
     height: 80,
   },
   {
-    skill_name: "Next.js 14",
+    skill_name: "",
     image: "",
     width: 80,
     height: 80,
   },
- /* {
-    skill_name: "Framer Motion",
-    image: "framer.png",
-    width: 80,
-    height: 80,
-  },
-  {
-    skill_name: "Stripe",
-    image: "stripe.png",
-    width: 80,
-    height: 80,
-  },*/
+
   {
     skill_name: "Node.js",
     image: "",
