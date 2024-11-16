@@ -183,6 +183,8 @@ export const PROJECTS = [
       '1',
     image: "1",
     link: "https://example.com",
+    githubLink: "https://github.com/user/project-one",
+    liveDemoLink: "https://live-demo-link.com/project-one",
   },
   {
     title: "2",
@@ -190,6 +192,8 @@ export const PROJECTS = [
       '2.',
     image: "2",
     link: "https://example.com",
+    githubLink: "https://github.com/user/project-one",
+    liveDemoLink: "https://live-demo-link.com/project-one",
   },
   {
     title: "3",
@@ -197,6 +201,8 @@ export const PROJECTS = [
       '3',
     image: "3",
     link: "https://example.com",
+    githubLink: "https://github.com/user/project-one",
+    liveDemoLink: "https://live-demo-link.com/project-one",
   },
 ] as const;
 
