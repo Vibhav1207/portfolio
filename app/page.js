@@ -1,15 +1,17 @@
 
 
-import Head from 'next/head';
 import StarField from '../components/StarField';
+import Navbar from '../components/Navbar';
+
+export const metadata = {
+  title: 'Space Theme Portfolio',
+  description: 'A space-themed portfolio using Next.js and Three.js',
+};
 
 export default function Home() {
   return (
     <div>
-      <Head>
-        <title>Space Theme Portfolio</title>
-        <meta name="description" content="A space-themed portfolio using Next.js and Three.js" />
-      </Head>
+      <Navbar />
       <StarField />
     </div>
   );

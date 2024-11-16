@@ -1,5 +1,89 @@
+/* styles/globals.css */
+
 body {
   margin: 0;
   background-color: rgba(1, 0, 18, 255);
   overflow: hidden; /* Prevent scrollbars */
+}
+
+.navbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: rgba(1, 0, 18, 0.8); /* Match navbar background with body */
+  z-index: 10; /* Ensure it is above the star field */
+}
+
+.logo h1 {
+  color: white; /* Logo color */
+  margin: 0; /* Remove default margin */
+}
+
+/* Create a container for nav links */
+.nav-links-container {
+  background-color: rgba(0, 0, 0, 0.5); /* Blackish transparent background */
+  border-radius: 15px; /* Circular edges */
+  padding: 10px 20px; /* Padding around the links */
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 20px; /* Space between links */
+}
+
+.nav-links li a {
+  color: white; /* Link color */
+  text-decoration: none; /* Remove underline */
+  font-size: 18px; /* Font size */
+}
+
+/* Social Icons */
+.social-icons {
+  display: flex;
+  gap: 15px; /* Space between icons */
+}
+
+.social-icons a {
+  color: white; /* Icon color */
+  font-size: 24px; /* Icon size */
+}
+
+/* Mobile Styles */
+.menu-icon {
+  display: none; /* Hide menu icon by default */
+  cursor: pointer; /* Change cursor on hover */
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    display: none; /* Hide links by default */
+    flex-direction: column; /* Stack links vertically */
+    position: absolute; /* Position absolute for dropdown */
+    top: 60px; /* Position below the navbar */
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Blackish transparent background */
+    padding: 10px; /* Add padding */
+    z-index: 5; /* Ensure it is above other content */
+  }
+
+  .nav-links.active {
+    display: flex; /* Show links when active */
+  }
+
+  .menu-icon {
+    display: block; /* Show menu icon on mobile */
+    color: white; /* Icon color */
+    font-size: 24px; /* Icon size */
+  }
+
+  .nav-links li {
+    margin: 10px 0; /* Space between links */
+  }
 }
