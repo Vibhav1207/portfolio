@@ -180,7 +180,7 @@ export const PROJECTS = [
   {
     title: "1",
     description:
-      '1',
+      '1111111111111111111111111111111111111111111111111111111111111111111111111',
     image: "1",
     link: "https://example.com",
     githubLink: "https://github.com/user/project-one",
@@ -189,7 +189,7 @@ export const PROJECTS = [
   {
     title: "2",
     description:
-      '2.',
+      '21111111111111111111111111111111111111111111111111111111111111111111111.',
     image: "2",
     link: "https://example.com",
     githubLink: "https://github.com/user/project-one",
@@ -198,7 +198,7 @@ export const PROJECTS = [
   {
     title: "3",
     description:
-      '3',
+      '31111111111111111111111111111111111111111111111111111111111111111',
     image: "3",
     link: "https://example.com",
     githubLink: "https://github.com/user/project-one",
