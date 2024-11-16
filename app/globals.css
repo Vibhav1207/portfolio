@@ -1,28 +1,5 @@
-/* styles/globals.css */
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  color: white;
-}
-
-nav {
-  display: flex;
-  justify-content: space-around;
-  padding: 10px;
-  font-size: 18px;
-}
-
-nav ul {
-  list-style: none;
-  display: flex;
-  gap: 20px;
-}
-
-nav li {
-  cursor: pointer;
-  transition: color 0.3s;
-}
-
-nav li:hover {
-  color: lightgray;
+  background-color: rgba(1, 0, 18, 255);
+  overflow: hidden; /* Prevent scrollbars */
 }
