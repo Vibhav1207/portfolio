@@ -212,12 +212,12 @@ export const FOOTER_DATA = [
       {
         name: "GitHub",
         icon: RxGithubLogo,
-        link: "https://github.com",
+        link: "https://github.com/Vibhav1207",
       },
       {
         name: "Discord",
         icon: RxDiscordLogo,
-        link: "https://discord.com",
+        link: "https://discord.gg/reefbot",
       },
     ],
   },
@@ -230,14 +230,14 @@ export const FOOTER_DATA = [
         link: "https://instagram.com",
       },
       {
-        name: "Twitter",
-        icon: RxTwitterLogo,
-        link: "https://twitter.com",
+        name: "Github",
+        icon: RxGithubLogo,
+        link: "https://github.com/Vibhav1207",
       },
       {
         name: "Linkedin",
         icon: RxLinkedinLogo,
-        link: "https://linkedin.com",
+        link: "https://www.linkedin.com/in/vibhavpatel/",
       },
     ],
   },
@@ -257,7 +257,7 @@ export const FOOTER_DATA = [
       {
         name: "Contact Me",
         icon: null,
-        link: "mailto:contact@example.com",
+        link: "mailto:vibhav07patel@gmail.com",
       },
     ],
   },
