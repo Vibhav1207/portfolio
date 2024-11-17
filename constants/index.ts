@@ -183,8 +183,7 @@ export const PROJECTS = [
       '1111111111111111111111111111111111111111111111111111111111111111111111111',
     image: "1",
     link: "https://example.com",
-    githubLink: "https://github.com/user/project-one",
-    liveDemoLink: "https://live-demo-link.com/project-one",
+
   },
   {
     title: "2",
