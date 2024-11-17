@@ -14,8 +14,6 @@ export const ProjectCard = ({
   description,
   link,
 }: ProjectCardProps) => {
-
-
   return (
     <Link
       href={link}
@@ -34,14 +32,6 @@ export const ProjectCard = ({
       <div className="relative p-4">
         <h1 className="text-2xl font-semibold text-white">{title}</h1>
         <p className="mt-2 text-gray-300">{description}</p>
-
-        {/* GitHub Button */}
-        <button
-          onClick={() => window.open(link, "_blank")}
-          className="mt-4 py-2 px-4 bg-[#2A0E61] text-white rounded-lg hover:bg-[#3B1E7D] transition"
-        >
-          GitHub
-        </button>
       </div>
     </Link>
   );
