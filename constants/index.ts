@@ -188,7 +188,7 @@ export const PROJECTS = [
     title: "FroDy Customs",
     description:
       'An e-commerce store specializing in custom GTA RP cars, offering unique designs tailored for roleplay enthusiasts..',
-    image: "figma.png",
+    image: "https://imgur.com/TIP5JVf.png",
     link: "https://frodycustoms.shop",
   },
   {
