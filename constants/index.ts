@@ -190,7 +190,7 @@ export const PROJECTS = [
     title: "FroDy Customs",
     description:
       'An e-commerce store specializing in custom GTA RP cars, offering unique designs tailored for roleplay enthusiasts..',
-    image: "frody.png",
+    image: "figma.png",
     link: "https://frodycustoms.shop",
     githubLink: "https://github.com/user/project-one",
     liveDemoLink: "https://live-demo-link.com/project-one",
