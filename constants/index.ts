@@ -198,7 +198,7 @@ export const PROJECTS = [
   {
     title: "3",
     description:
-      '3',
+      'An e-commerce store specializing in custom GTA RP cars, offering unique designs tailored for roleplay enthusiasts..',
     image: "3",
     link: "https://example.com",
     githubLink: "https://github.com/user/project-one",
