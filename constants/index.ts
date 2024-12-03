@@ -182,7 +182,7 @@ export const PROJECTS = [
     description:
       'An immersive anime streaming platform with a sleek design, seamless navigation, and personalized watchlists for every anime fan.',
     image: "1",
-    link: "https://example.com",
+    link: "https://zoroverse.xyz",
     githubLink: "https://github.com/user/project-one",
     liveDemoLink: "https://live-demo-link.com/project-one",
   },
@@ -190,7 +190,7 @@ export const PROJECTS = [
     title: "FroDy Customs",
     description:
       'An e-commerce store specializing in custom GTA RP cars, offering unique designs tailored for roleplay enthusiasts..',
-    image: "public/projects/frody-customs.png",
+    image: "https://github.com/Vibhav1207/portfolio/blob/main/public/projects/frody-customs.png?raw=true",
     link: "https://frodycustoms.shop",
     githubLink: "https://github.com/user/project-one",
     liveDemoLink: "https://live-demo-link.com/project-one",
