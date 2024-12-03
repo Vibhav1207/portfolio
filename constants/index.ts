@@ -178,20 +178,20 @@ export const OTHER_SKILL = [
 
 export const PROJECTS = [
   {
-    title: "1",
+    title: "ZOROVERSE",
     description:
-      '1',
+      'An immersive anime streaming platform with a sleek design, seamless navigation, and personalized watchlists for every anime fan.',
     image: "1",
     link: "https://example.com",
     githubLink: "https://github.com/user/project-one",
     liveDemoLink: "https://live-demo-link.com/project-one",
   },
   {
-    title: "2",
+    title: "FroDy Customs",
     description:
-      '2.',
-    image: "2",
-    link: "https://example.com",
+      'An e-commerce store specializing in custom GTA RP cars, offering unique designs tailored for roleplay enthusiasts..',
+    image: "public/projects/frody-customs.png",
+    link: "https://frodycustoms.shop",
     githubLink: "https://github.com/user/project-one",
     liveDemoLink: "https://live-demo-link.com/project-one",
   },
