@@ -12,6 +12,20 @@ import {
 export default function useComments() {
   const [comments, setComments] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
+  const [likedIds, setLikedIds] = useState<Set<number>>(new Set())
+
+  // Initialize likedIds from localStorage
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const ids = new Set<number>()
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (key?.startsWith('liked-')) {
+        ids.add(Number(key.replace('liked-', '')))
+      }
+    }
+    setLikedIds(ids)
+  }, [])
 
   useEffect(() => {
     fetchInitialComments()
@@ -90,33 +104,77 @@ export default function useComments() {
     id: number,
     currentLikes: number
   ) => {
-    const liked = localStorage.getItem(`liked-${id}`)
+    const alreadyLiked = likedIds.has(id)
 
-    if (liked) return
+    if (alreadyLiked) {
+      // Unlike: decrement
+      try {
+        const newLikes = Math.max(0, (currentLikes || 0) - 1)
+        if (!isPlaceholder) {
+          const { error } = await supabase
+            .from('comments')
+            .update({ likes: newLikes })
+            .eq('id', id)
+          if (error) throw error
+        } else {
+          // Update mock storage
+          const stored = localStorage.getItem('portfolio-comments')
+          if (stored) {
+            const parsed = JSON.parse(stored)
+            const updated = parsed.map((c: any) => c.id === id ? { ...c, likes: newLikes } : c)
+            localStorage.setItem('portfolio-comments', JSON.stringify(updated))
+          }
+        }
 
-    try {
-      const newLikes = await likeCommentService(
-        id,
-        currentLikes
-      )
+        localStorage.removeItem(`liked-${id}`)
+        setLikedIds((prev) => {
+          const next = new Set(prev)
+          next.delete(id)
+          return next
+        })
 
-      localStorage.setItem(`liked-${id}`, 'true')
-
-      setComments((prev) =>
-        prev.map((item) =>
-          item.id === id
-            ? { ...item, likes: newLikes }
-            : item
+        setComments((prev) =>
+          prev.map((item) =>
+            item.id === id
+              ? { ...item, likes: newLikes }
+              : item
+          )
         )
-      )
-    } catch (err) {
-      console.log(err)
+      } catch (err) {
+        console.log(err)
+      }
+    } else {
+      // Like: increment
+      try {
+        const newLikes = await likeCommentService(
+          id,
+          currentLikes
+        )
+
+        localStorage.setItem(`liked-${id}`, 'true')
+        setLikedIds((prev) => {
+          const next = new Set(prev)
+          next.add(id)
+          return next
+        })
+
+        setComments((prev) =>
+          prev.map((item) =>
+            item.id === id
+              ? { ...item, likes: newLikes }
+              : item
+          )
+        )
+      } catch (err) {
+        console.log(err)
+      }
     }
   }
 
   return {
     comments,
     loading,
+    likedIds,
     addComment,
     likeComment,
   }

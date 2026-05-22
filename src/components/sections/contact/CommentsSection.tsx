@@ -32,7 +32,7 @@ const itemVariants: Variants = {
 }
 
 export default function CommentsSection() {
-  const { comments, loading, addComment, likeComment } =
+  const { comments, loading, likedIds, addComment, likeComment } =
     useComments()
 
   const [name, setName] = useState('')
@@ -232,15 +232,32 @@ export default function CommentsSection() {
                     )}
                   </div>
 
-                  <button
+                  <motion.button
                     onClick={() =>
                       likeComment(item.id, item.likes)
                     }
-                    className="flex items-center gap-1 text-[11px] text-white/40 hover:text-white transition-colors"
+                    whileTap={{ scale: 0.75 }}
+                    className="flex items-center gap-1 text-[11px] transition-colors shrink-0"
+                    style={{ color: likedIds.has(item.id) ? '#ef4444' : 'rgba(255,255,255,0.4)' }}
                   >
-                    <Heart size={13} />
+                    <motion.div
+                      key={`heart-${item.id}-${likedIds.has(item.id)}`}
+                      initial={likedIds.has(item.id) ? { scale: 0 } : { scale: 1 }}
+                      animate={{ scale: 1 }}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 500,
+                        damping: 15,
+                      }}
+                    >
+                      <Heart
+                        size={13}
+                        fill={likedIds.has(item.id) ? 'currentColor' : 'none'}
+                        className="transition-colors duration-200"
+                      />
+                    </motion.div>
                     {item.likes || 0}
-                  </button>
+                  </motion.button>
                 </div>
               </motion.div>
             ))}

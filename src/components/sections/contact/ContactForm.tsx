@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { motion, Variants } from 'framer-motion'
 import {
   Send,
@@ -7,6 +8,8 @@ import {
   Mail,
   MessageSquare,
   ArrowUpRight,
+  Loader2,
+  CheckCircle,
 } from 'lucide-react'
 
 import {
@@ -67,6 +70,46 @@ const socialLinks = [
 ]
 
 export default function ContactForm() {
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [message, setMessage] = useState('')
+  const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
+
+  const handleSubmit = async () => {
+    if (!name.trim() || !email.trim() || !message.trim()) return
+
+    setStatus('sending')
+
+    try {
+      const res = await fetch('https://formspree.io/f/YOUR_FORMSPREE_ID', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          message: message.trim(),
+          _subject: `Portfolio Contact: ${name.trim()}`,
+        }),
+      })
+
+      if (res.ok) {
+        setStatus('success')
+        setName('')
+        setEmail('')
+        setMessage('')
+
+        // Reset status after 4 seconds
+        setTimeout(() => setStatus('idle'), 4000)
+      } else {
+        setStatus('error')
+        setTimeout(() => setStatus('idle'), 4000)
+      }
+    } catch {
+      setStatus('error')
+      setTimeout(() => setStatus('idle'), 4000)
+    }
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, x: -40 }}
@@ -84,7 +127,7 @@ export default function ContactForm() {
         transition={{ delay: 0.05 }}
       >
         <h2 className="text-2xl md:text-3xl font-bold mb-3">
-          Hubungi Saya
+          Contact Me
         </h2>
 
         <p className="text-sm text-white/50 mb-7">
@@ -107,6 +150,8 @@ export default function ContactForm() {
             <User className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />
 
             <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               placeholder="Your Name"
               className="w-full rounded-2xl border border-white/15 bg-black/20 pl-12 pr-4 py-4 outline-none transition duration-200 focus:border-white focus:ring-1 focus:ring-white/40"
             />
@@ -125,6 +170,9 @@ export default function ContactForm() {
             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />
 
             <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Your Email"
               className="w-full rounded-2xl border border-white/15 bg-black/20 pl-12 pr-4 py-4 outline-none transition duration-200 focus:border-white focus:ring-1 focus:ring-white/40"
             />
@@ -144,6 +192,8 @@ export default function ContactForm() {
 
             <textarea
               rows={5}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
               placeholder="Your Message"
               className="w-full rounded-2xl border border-white/15 bg-black/20 pl-12 pr-4 py-4 outline-none resize-none transition duration-200 focus:border-white focus:ring-1 focus:ring-white/40"
             />
@@ -158,14 +208,41 @@ export default function ContactForm() {
           viewport={{ once: false }}
           transition={{ delay: 0.28 }}
           whileHover={{
-            scale: 1.06,
+            scale: status === 'sending' ? 1 : 1.06,
             transition: { duration: 0.12 },
           }}
           whileTap={{ scale: 0.97 }}
-          className="w-full rounded-2xl py-4 bg-white/10 border border-white/10 flex items-center justify-center gap-2"
+          onClick={handleSubmit}
+          disabled={status === 'sending'}
+          className={`w-full rounded-2xl py-4 border flex items-center justify-center gap-2 transition-all duration-300 ${
+            status === 'success'
+              ? 'bg-green-500/15 border-green-500/30 text-green-400'
+              : status === 'error'
+              ? 'bg-red-500/15 border-red-500/30 text-red-400'
+              : 'bg-white/10 border-white/10'
+          }`}
         >
-          <Send size={16} />
-          Send Message
+          {status === 'sending' ? (
+            <>
+              <Loader2 size={16} className="animate-spin" />
+              Sending...
+            </>
+          ) : status === 'success' ? (
+            <>
+              <CheckCircle size={16} />
+              Message Sent!
+            </>
+          ) : status === 'error' ? (
+            <>
+              <Send size={16} />
+              Failed — Try Again
+            </>
+          ) : (
+            <>
+              <Send size={16} />
+              Send Message
+            </>
+          )}
         </motion.button>
       </div>
 
