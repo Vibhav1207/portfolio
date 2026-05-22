@@ -49,7 +49,6 @@ useEffect(() => {
 
   // hanya homepage yang reset intro
   if (isReload && pathname === '/') {
-    sessionStorage.removeItem('introPlayed')
     sessionStorage.removeItem('heroPlayed')
 
     if (window.location.hash) {

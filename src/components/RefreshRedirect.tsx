@@ -18,7 +18,6 @@ export default function RefreshRedirect() {
       pathname === '/' && hash !== ''
 
     if (isRefresh && isHomeSectionRefresh) {
-      sessionStorage.removeItem('introPlayed')
       sessionStorage.removeItem('heroPlayed')
       sessionStorage.removeItem('navbarPlayed')
 
