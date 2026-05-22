@@ -44,7 +44,7 @@ const fieldVariants: Variants = {
 const socialLinks = [
   {
     title: 'Instagram',
-    user: '@vibhav.patel07',
+    user: 'vibhav.patel07',
     icon: FaInstagram,
     link: 'https://www.instagram.com/vibhav.patel07/',
   },
