@@ -136,6 +136,73 @@ FOR SELECT
 USING (true);
 
 -- ========================================
+-- POLICIES (AUTHENTICATED WRITE ACCESS)
+-- ========================================
+
+CREATE POLICY "Allow authenticated insert projects"
+ON public.projects
+FOR INSERT
+TO authenticated
+WITH CHECK (true);
+
+CREATE POLICY "Allow authenticated update projects"
+ON public.projects
+FOR UPDATE
+TO authenticated
+USING (true)
+WITH CHECK (true);
+
+CREATE POLICY "Allow authenticated delete projects"
+ON public.projects
+FOR DELETE
+TO authenticated
+USING (true);
+
+CREATE POLICY "Allow authenticated insert certificates"
+ON public.certificates
+FOR INSERT
+TO authenticated
+WITH CHECK (true);
+
+CREATE POLICY "Allow authenticated update certificates"
+ON public.certificates
+FOR UPDATE
+TO authenticated
+USING (true)
+WITH CHECK (true);
+
+CREATE POLICY "Allow authenticated delete certificates"
+ON public.certificates
+FOR DELETE
+TO authenticated
+USING (true);
+
+CREATE POLICY "Allow authenticated insert tech_stack"
+ON public.tech_stack
+FOR INSERT
+TO authenticated
+WITH CHECK (true);
+
+CREATE POLICY "Allow authenticated update tech_stack"
+ON public.tech_stack
+FOR UPDATE
+TO authenticated
+USING (true)
+WITH CHECK (true);
+
+CREATE POLICY "Allow authenticated delete tech_stack"
+ON public.tech_stack
+FOR DELETE
+TO authenticated
+USING (true);
+
+CREATE POLICY "Allow authenticated delete comments"
+ON public.comments
+FOR DELETE
+TO authenticated
+USING (true);
+
+-- ========================================
 -- UPDATED_AT TRIGGER
 -- ========================================
 

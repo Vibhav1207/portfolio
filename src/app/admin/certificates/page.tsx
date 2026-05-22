@@ -122,7 +122,7 @@ export default function CertificatesPage() {
 setOpen(false);
 resetForm();
 
-fetchCertificates
+fetchCertificates();
   };
 
   const handleDelete = async (id: number) => {
