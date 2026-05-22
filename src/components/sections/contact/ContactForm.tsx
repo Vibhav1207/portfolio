@@ -17,7 +17,6 @@ import {
   FaInstagram,
   FaGithub,
   FaYoutube,
-  FaTiktok,
 } from 'react-icons/fa'
 
 const smoothEase: [number, number, number, number] = [
@@ -61,12 +60,7 @@ const socialLinks = [
     icon: FaGithub,
     link: 'https://github.com/Vibhav',
   },
-  {
-    title: 'TikTok',
-    user: '@Vibhav',
-    icon: FaTiktok,
-    link: 'https://www.tiktok.com/@Vibhav',
-  },
+
 ]
 
 export default function ContactForm() {
@@ -214,13 +208,12 @@ export default function ContactForm() {
           whileTap={{ scale: 0.97 }}
           onClick={handleSubmit}
           disabled={status === 'sending'}
-          className={`w-full rounded-2xl py-4 border flex items-center justify-center gap-2 transition-all duration-300 ${
-            status === 'success'
-              ? 'bg-green-500/15 border-green-500/30 text-green-400'
-              : status === 'error'
+          className={`w-full rounded-2xl py-4 border flex items-center justify-center gap-2 transition-all duration-300 ${status === 'success'
+            ? 'bg-green-500/15 border-green-500/30 text-green-400'
+            : status === 'error'
               ? 'bg-red-500/15 border-red-500/30 text-red-400'
               : 'bg-white/10 border-white/10'
-          }`}
+            }`}
         >
           {status === 'sending' ? (
             <>
