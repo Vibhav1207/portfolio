@@ -6,6 +6,7 @@ import {
   X,
   ChevronDown,
   ChevronUp,
+  ArrowUpRight,
 } from 'lucide-react'
 import usePortfolio from '@/hooks/usePortfolio'
 import PortfolioCard from './PortfolioCard'
@@ -317,24 +318,82 @@ export default function PortfolioShowcase() {
                         delay: i * 0.04,
                       }}
                       whileHover={{ y: -4 }}
-                      onClick={() => {
-                        setPreviewImage(
-                          item.image_url
-                        )
-                        setPreviewOpen(true)
-                      }}
-                      className="group cursor-pointer rounded-[26px] border border-white/10 bg-white/5 p-4 backdrop-blur-xl"
+                      className="group rounded-[26px] border border-white/10 bg-white/5 p-4 backdrop-blur-xl flex flex-col relative overflow-hidden"
                     >
-                      <div className="rounded-2xl overflow-hidden border border-white/10 h-56">
-                        <img
-                          src={item.image_url}
-                          className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                        />
+                      {/* Type Badge */}
+                      {item.type && (
+                        <div className="absolute top-5 right-5 z-10">
+                          <span
+                            style={{ fontFamily: "'DM Mono', monospace" }}
+                            className={`text-[9px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full border backdrop-blur-md ${
+                              item.type === 'achievement'
+                                ? 'bg-amber-500/15 border-amber-500/30 text-amber-300'
+                                : 'bg-violet-500/15 border-violet-500/30 text-violet-300'
+                            }`}
+                          >
+                            {item.type === 'achievement' ? '🏆 Achievement' : '📚 Course'}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Certificate Image */}
+                      <div className="rounded-2xl overflow-hidden border border-white/10 h-56 bg-white/[0.02]">
+                        {item.image_url ? (
+                          <img
+                            src={item.image_url}
+                            alt={item.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-white/20">
+                            <span style={{ fontFamily: "'DM Mono', monospace" }} className="text-[11px] tracking-wider uppercase">No Image</span>
+                          </div>
+                        )}
                       </div>
 
-                      <h3 className="mt-4 text-[15px] font-semibold text-center text-white/90">
+                      {/* Title */}
+                      <h3 className="mt-4 text-[15px] font-semibold text-white/90 leading-tight line-clamp-2 min-h-[40px]">
                         {item.title}
                       </h3>
+
+                      {/* Proof Button */}
+                      <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between">
+                        {item.proof_url ? (
+                          <a
+                            href={item.proof_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1.5 text-[12px] text-white/50 hover:text-white transition-all duration-300 group/link"
+                          >
+                            <span>Proof</span>
+                            <ArrowUpRight size={13} className="group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 group-hover/link:text-violet-300 transition duration-300" />
+                          </a>
+                        ) : item.image_url ? (
+                          <button
+                            onClick={() => {
+                              setPreviewImage(item.image_url)
+                              setPreviewOpen(true)
+                            }}
+                            className="flex items-center gap-1.5 text-[12px] text-white/50 hover:text-white transition-all duration-300 group/link cursor-pointer"
+                          >
+                            <span>Proof</span>
+                            <ArrowUpRight size={13} className="group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 group-hover/link:text-violet-300 transition duration-300" />
+                          </button>
+                        ) : (
+                          <div className="text-[12px] text-white/30">
+                            No Proof
+                          </div>
+                        )}
+
+                        {item.type && (
+                          <span
+                            style={{ fontFamily: "'DM Mono', monospace" }}
+                            className="text-[9px] text-white/25 tracking-wider uppercase"
+                          >
+                            {item.type}
+                          </span>
+                        )}
+                      </div>
                     </motion.div>
                   ))}
               </div>

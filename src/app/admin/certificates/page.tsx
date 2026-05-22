@@ -16,6 +16,8 @@ export default function CertificatesPage() {
   const [title, setTitle] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState("");
+  const [certType, setCertType] = useState<'achievement' | 'course'>('course');
+  const [proofUrl, setProofUrl] = useState("");
 
   const [saving, setSaving] = useState(false);
 
@@ -59,6 +61,8 @@ export default function CertificatesPage() {
     setImage(null);
     setPreview("");
     setEditId(null);
+    setCertType('course');
+    setProofUrl("");
   };
 
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,6 +103,8 @@ export default function CertificatesPage() {
         .update({
           title,
           image_url: imageUrl,
+          type: certType,
+          proof_url: proofUrl || null,
         })
         .eq("id", editId);
     } else {
@@ -106,6 +112,8 @@ export default function CertificatesPage() {
         {
           title,
           image_url: imageUrl,
+          type: certType,
+          proof_url: proofUrl || null,
         },
       ]);
     }
@@ -163,6 +171,8 @@ fetchCertificates
     setTitle(item.title);
     setPreview(item.image_url);
     setEditId(item.id);
+    setCertType(item.type || 'course');
+    setProofUrl(item.proof_url || "");
     setOpen(true);
   };
 
@@ -222,10 +232,21 @@ fetchCertificates
                     )}
                   </div>
 
-                  {/* TITLE */}
-                  <h2 className="font-semibold text-[15px] mb-3 line-clamp-2 min-h-[42px]">
-                    {item.title}
-                  </h2>
+                  {/* TITLE + TYPE */}
+                  <div className="flex items-start justify-between gap-2 mb-3">
+                    <h2 className="font-semibold text-[15px] line-clamp-2 min-h-[42px] flex-1">
+                      {item.title}
+                    </h2>
+                    {item.type && (
+                      <span className={`text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full border shrink-0 ${
+                        item.type === 'achievement'
+                          ? 'bg-amber-500/15 border-amber-500/30 text-amber-300'
+                          : 'bg-violet-500/15 border-violet-500/30 text-violet-300'
+                      }`}>
+                        {item.type === 'achievement' ? '🏆' : '📚'} {item.type}
+                      </span>
+                    )}
+                  </div>
 
                   {/* DATE */}
                   <span className="text-[11px] text-white/30 mb-4">
@@ -306,6 +327,43 @@ fetchCertificates
               placeholder="Certificate Title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              className="w-full px-4 py-3 rounded-2xl bg-[#0f0f0f] border border-white/10 outline-none mb-4 text-sm"
+            />
+
+            {/* TYPE */}
+            <div className="mb-4">
+              <label className="text-[11px] text-white/40 uppercase tracking-wider mb-2 block" style={{ fontFamily: "'DM Mono', monospace" }}>Type</label>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setCertType('course')}
+                  className={`flex-1 px-4 py-3 rounded-2xl border text-sm transition-all ${
+                    certType === 'course'
+                      ? 'bg-violet-500/15 border-violet-500/30 text-violet-300'
+                      : 'bg-[#0f0f0f] border-white/10 text-white/50 hover:border-white/20'
+                  }`}
+                >
+                  📚 Course
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCertType('achievement')}
+                  className={`flex-1 px-4 py-3 rounded-2xl border text-sm transition-all ${
+                    certType === 'achievement'
+                      ? 'bg-amber-500/15 border-amber-500/30 text-amber-300'
+                      : 'bg-[#0f0f0f] border-white/10 text-white/50 hover:border-white/20'
+                  }`}
+                >
+                  🏆 Achievement
+                </button>
+              </div>
+            </div>
+
+            {/* PROOF URL */}
+            <input
+              placeholder="Proof URL (optional — link to credential)"
+              value={proofUrl}
+              onChange={(e) => setProofUrl(e.target.value)}
               className="w-full px-4 py-3 rounded-2xl bg-[#0f0f0f] border border-white/10 outline-none mb-5 text-sm"
             />
 

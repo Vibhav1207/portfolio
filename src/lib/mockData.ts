@@ -16,6 +16,8 @@ export interface MockCertificate {
   id: number
   title: string
   image_url: string
+  type?: 'achievement' | 'course'
+  proof_url?: string
   created_at?: string
 }
 
