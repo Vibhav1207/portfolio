@@ -645,11 +645,13 @@ __      ___   ___   _  _    _    __   __
         .from("certificates")
         .select("*", { count: "exact", head: true });
 
-      setProjectCount(projects || 0);
-      setCertificateCount(certificates || 0);
+      // Fall back to mock data counts when DB returns 0 or null
+      setProjectCount((projects && projects > 0) ? projects : mockProjects.length);
+      setCertificateCount((certificates && certificates > 0) ? certificates : mockCertificates.length);
     } catch {
-      setProjectCount(0);
-      setCertificateCount(0);
+      // On error, still show mock data counts instead of 0
+      setProjectCount(mockProjects.length);
+      setCertificateCount(mockCertificates.length);
     }
   };
 
