@@ -44,7 +44,24 @@ export const mockProjects: MockProject[] = [
   }
 ]
 
-export const mockCertificates: MockCertificate[] = []
+export const mockCertificates: MockCertificate[] = [
+  {
+    id: 1,
+    title: 'Meta Front-End Developer Professional Certificate',
+    image_url: 'https://images.credly.com/size/680x680/images/e91ed0b0-842b-417f-8d2f-b07e52cc85a1/image.png',
+    type: 'course',
+    proof_url: 'https://www.coursera.org/professional-certificates/meta-front-end-developer',
+    created_at: '2026-03-15',
+  },
+  {
+    id: 2,
+    title: 'Smart India Hackathon 2025 — Winner',
+    image_url: 'https://upload.wikimedia.org/wikipedia/en/2/29/Smart_India_Hackathon_logo.png',
+    type: 'achievement',
+    proof_url: '',
+    created_at: '2025-12-10',
+  },
+]
 
 export const mockTechStacks: MockTechStack[] = [
   {
