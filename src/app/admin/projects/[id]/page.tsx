@@ -16,6 +16,7 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  Upload,
 } from "lucide-react";
 
 export default function ProjectDetailPage() {
@@ -27,6 +28,35 @@ export default function ProjectDetailPage() {
   const [form, setForm] = useState<any>({});
   const [currentImage, setCurrentImage] = useState(0);
   const [previewOpen, setPreviewOpen] = useState(false);
+
+  const [newImages, setNewImages] = useState<File[]>([]);
+  const [newPreviews, setNewPreviews] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
+
+  const removeExistingImage = (index: number) => {
+    const currentUrls: string[] = Array.isArray(form.image_urls) ? form.image_urls : [form.image_url].filter(Boolean) as string[];
+    const updatedUrls = currentUrls.filter((_: string, i: number) => i !== index);
+    setForm({
+      ...form,
+      image_urls: updatedUrls,
+      image_url: updatedUrls[0] || null
+    });
+    if (currentImage >= updatedUrls.length) {
+      setCurrentImage(Math.max(0, updatedUrls.length - 1));
+    }
+  };
+
+  const removeNewImage = (index: number) => {
+    setNewImages((prev) => prev.filter((_, i) => i !== index));
+    setNewPreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleNewImages = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setNewImages((prev) => [...prev, ...files]);
+    const urls = files.map((file) => URL.createObjectURL(file));
+    setNewPreviews((prev) => [...prev, ...urls]);
+  };
 
   useEffect(() => {
     fetchProject();
@@ -86,6 +116,37 @@ export default function ProjectDetailPage() {
 };
 
   const handleUpdate = async () => {
+    setUploading(true);
+    const uploadedUrls: string[] = [];
+    try {
+      for (const image of newImages) {
+        const fileName = `${Date.now()}-${Math.random()}-${image.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from("projects")
+          .upload(fileName, image);
+        
+        if (uploadError) {
+          console.error("Upload error:", uploadError);
+          continue;
+        }
+
+        const { data } = supabase.storage
+          .from("projects")
+          .getPublicUrl(fileName);
+        
+        uploadedUrls.push(data.publicUrl);
+      }
+    } catch (uploadErr) {
+      console.error("Storage upload exception:", uploadErr);
+    }
+
+    const existingUrls = Array.isArray(form.image_urls)
+      ? form.image_urls
+      : form.image_url
+      ? [form.image_url]
+      : [];
+    const finalUrls = [...existingUrls, ...uploadedUrls];
+
     const updatedForm = {
       ...form,
       technologies: Array.isArray(form.technologies)
@@ -97,7 +158,9 @@ export default function ProjectDetailPage() {
         ? form.key_features
         : typeof form.key_features === "string"
         ? form.key_features.split(",").map((f: string) => f.trim()).filter(Boolean)
-        : []
+        : [],
+      image_url: finalUrls[0] || null,
+      image_urls: finalUrls
     };
 
     const { error } = await supabase
@@ -108,7 +171,10 @@ export default function ProjectDetailPage() {
     if (!error) {
       setProject(updatedForm);
       setForm(updatedForm);
+      setNewImages([]);
+      setNewPreviews([]);
       setEditMode(false);
+      setCurrentImage(0);
 
       Swal.fire({
         title: "Berhasil",
@@ -128,6 +194,7 @@ export default function ProjectDetailPage() {
         color: "#fff",
       });
     }
+    setUploading(false);
   };
   if (!project)
     return (
@@ -400,62 +467,139 @@ export default function ProjectDetailPage() {
           className="w-full"
         >
           {/* GALLERY */}
-          {galleryImages.length > 0 && (
-            <div className="mb-6 xl:max-w-[520px] xl:ml-auto">
-              <div className="relative rounded-[28px] overflow-hidden border border-white/10 bg-[#101010] shadow-[0_0_40px_rgba(255,255,255,0.03)]">
-                <motion.img
-                  key={currentImage}
-                  initial={{
-                    opacity: 0.5,
-                    scale: 1.02,
-                  }}
-                  animate={{
-                    opacity: 1,
-                    scale: 1,
-                  }}
-                  transition={{
-                    duration: 0.35,
-                  }}
-                  src={galleryImages[currentImage]}
-                  onClick={() => setPreviewOpen(true)}
-                  className="w-full h-[200px] sm:h-[240px] md:h-[270px] xl:h-[280px] 2xl:h-[300px] object-cover cursor-pointer"
-                />
-
-                {currentImage > 0 && (
-                  <button
-                    onClick={prevImage}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center"
-                  >
-                    <ChevronLeft size={17} />
-                  </button>
-                )}
-
-                {currentImage < galleryImages.length - 1 && (
-                  <button
-                    onClick={nextImage}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center"
-                  >
-                    <ChevronRight size={17} />
-                  </button>
-                )}
+          {editMode ? (
+            <div className="mb-6 xl:max-w-[520px] xl:ml-auto space-y-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Upload size={15} className="text-white/70" />
+                <p className="text-sm font-semibold">Manage Project Images</p>
               </div>
 
-              {galleryImages.length > 1 && (
-                <div className="flex justify-center gap-2 mt-4">
-                  {galleryImages.map((_: any, i: number) => (
-                    <button
-                      key={i}
-                      onClick={() => setCurrentImage(i)}
-                      className={`transition-all rounded-full ${
-                        currentImage === i
-                          ? "w-7 h-2 bg-white"
-                          : "w-2 h-2 bg-white/30"
-                      }`}
-                    />
-                  ))}
+              {/* EXISTING IMAGES */}
+              {galleryImages.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs text-white/50">Existing Images</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {galleryImages.map((imgUrl: string, idx: number) => (
+                      <div
+                        key={idx}
+                        className="relative rounded-xl overflow-hidden border border-white/10 bg-[#101010]"
+                      >
+                        <img
+                          src={imgUrl}
+                          className="w-full h-20 object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeExistingImage(idx)}
+                          className="absolute top-1.5 right-1.5 bg-black/80 hover:bg-black rounded-full p-1 text-white/70 hover:text-white transition"
+                        >
+                          <X size={12} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
+
+              {/* NEW UPLOADS PREVIEW */}
+              {newPreviews.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs text-white/50">New Images to Upload</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {newPreviews.map((imgUrl: string, idx: number) => (
+                      <div
+                        key={idx}
+                        className="relative rounded-xl overflow-hidden border border-dashed border-white/20 bg-[#101010]"
+                      >
+                        <img
+                          src={imgUrl}
+                          className="w-full h-20 object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeNewImage(idx)}
+                          className="absolute top-1.5 right-1.5 bg-black/80 hover:bg-black rounded-full p-1 text-white/70 hover:text-white transition"
+                        >
+                          <X size={12} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* UPLOAD TRIGGER */}
+              <div>
+                <label className="border border-dashed border-white/15 rounded-2xl bg-[#111] hover:bg-[#151515] transition flex flex-col items-center justify-center p-6 cursor-pointer text-center">
+                  <Upload size={18} className="mb-2 text-white/50" />
+                  <span className="text-xs text-white/60">Upload New Images</span>
+                  <input
+                    type="file"
+                    multiple
+                    hidden
+                    onChange={handleNewImages}
+                  />
+                </label>
+              </div>
             </div>
+          ) : (
+            galleryImages.length > 0 && (
+              <div className="mb-6 xl:max-w-[520px] xl:ml-auto">
+                <div className="relative rounded-[28px] overflow-hidden border border-white/10 bg-[#101010] shadow-[0_0_40px_rgba(255,255,255,0.03)]">
+                  <motion.img
+                    key={currentImage}
+                    initial={{
+                      opacity: 0.5,
+                      scale: 1.02,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      scale: 1,
+                    }}
+                    transition={{
+                      duration: 0.35,
+                    }}
+                    src={galleryImages[currentImage]}
+                    onClick={() => setPreviewOpen(true)}
+                    className="w-full h-[200px] sm:h-[240px] md:h-[270px] xl:h-[280px] 2xl:h-[300px] object-cover cursor-pointer"
+                  />
+
+                  {currentImage > 0 && (
+                    <button
+                      onClick={prevImage}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center"
+                    >
+                      <ChevronLeft size={17} />
+                    </button>
+                  )}
+
+                  {currentImage < galleryImages.length - 1 && (
+                    <button
+                      onClick={nextImage}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center"
+                    >
+                      <ChevronRight size={17} />
+                    </button>
+                  )}
+                </div>
+
+                {galleryImages.length > 1 && (
+                  <div className="flex justify-center gap-2 mt-4">
+                    {galleryImages.map((_: any, i: number) => (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentImage(i)}
+                        className={`transition-all rounded-full ${
+                          currentImage === i
+                            ? "w-7 h-2 bg-white"
+                            : "w-2 h-2 bg-white/30"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
           )}
 
           {/* FEATURES */}
@@ -502,14 +646,21 @@ export default function ProjectDetailPage() {
           <>
             <button
               onClick={handleUpdate}
-              className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-white text-black font-medium hover:opacity-90 transition"
+              disabled={uploading}
+              className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-white text-black font-medium hover:opacity-90 transition disabled:opacity-50"
             >
-              Save
+              {uploading ? "Saving..." : "Save"}
             </button>
 
             <button
-              onClick={() => setEditMode(false)}
-              className="w-full sm:w-auto px-5 py-3 rounded-2xl border border-white/10 hover:bg-white/5 transition"
+              onClick={() => {
+                setForm(project);
+                setNewImages([]);
+                setNewPreviews([]);
+                setEditMode(false);
+              }}
+              disabled={uploading}
+              className="w-full sm:w-auto px-5 py-3 rounded-2xl border border-white/10 hover:bg-white/5 transition disabled:opacity-50"
             >
               Cancel
             </button>
@@ -517,7 +668,12 @@ export default function ProjectDetailPage() {
         ) : (
           <>
             <button
-              onClick={() => setEditMode(true)}
+              onClick={() => {
+                setNewImages([]);
+                setNewPreviews([]);
+                setForm(project);
+                setEditMode(true);
+              }}
               className="w-full sm:w-auto px-5 py-3 rounded-2xl border border-white/10 hover:bg-white/5 transition"
             >
               Edit
