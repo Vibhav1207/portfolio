@@ -60,12 +60,7 @@ const socialLinks = [
     icon: FaGithub,
     link: 'https://github.com/Vibhav1207',
   },
-  {
-    title: 'LinkedIn',
-    user: 'Vibhav Patel',
-    icon: FaLinkedinIn,
-    link: 'https://linkedin.com/in/vibhav-patel-07',
-  },
+
 
 ]
 
