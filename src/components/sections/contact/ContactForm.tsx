@@ -44,21 +44,27 @@ const fieldVariants: Variants = {
 const socialLinks = [
   {
     title: 'Instagram',
-    user: '@Vibhav',
+    user: '@vibhav.patel07',
     icon: FaInstagram,
-    link: 'https://www.instagram.com/Vibhav',
+    link: 'https://www.instagram.com/vibhav.patel07/',
   },
   {
     title: 'Youtube',
-    user: '@Vibhav',
+    user: '@Vyqor',
     icon: FaYoutube,
-    link: 'https://youtube.com/@Vibhav',
+    link: 'https://youtube.com/@Vyqor',
   },
   {
     title: 'Github',
-    user: '@Vibhav',
+    user: '@Vibhav1207',
     icon: FaGithub,
-    link: 'https://github.com/Vibhav',
+    link: 'https://github.com/Vibhav1207',
+  },
+  {
+    title: 'LinkedIn',
+    user: 'Vibhav Patel',
+    icon: FaLinkedinIn,
+    link: 'https://linkedin.com/in/vibhav-patel-07',
   },
 
 ]
