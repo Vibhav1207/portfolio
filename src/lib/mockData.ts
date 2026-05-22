@@ -30,14 +30,14 @@ export const mockProjects: MockProject[] = [
   {
     id: 'f7a1b2c3-d4e5-6789-abcd-rupeematrix01',
     title: 'Rupee Matrix',
-    description: 'Rupee Matrix is a comprehensive financial analytics and currency tracking platform designed for the Indian market. It provides real-time exchange rate monitoring, historical trend analysis, and smart alerts for favorable conversion windows. The platform features interactive dashboards, portfolio tracking, and AI-powered forecasting to help users make informed financial decisions.',
+    description: 'Rupee Matrix is a finance and investment platform focused on wealth management services including mutual funds, insurance, bonds, and retirement planning. Built with a responsive and user-friendly interface to simplify financial guidance, investment exploration, and service accessibility. Features structured service modules and information architecture designed to improve user engagement and financial decision support.',
     live_url: 'https://rupeematrix.in',
     github_url: '',
-    technologies: 'Next.js, React, TypeScript, Tailwind CSS, Node.js, PostgreSQL',
-    key_features: 'Real-time currency exchange tracking, Interactive financial dashboards, AI-powered rate forecasting, Portfolio performance analytics, Smart alert notifications',
-    image_url: '/images/rupee-matrix-placeholder.svg',
+    technologies: 'React.js, Node.js, JavaScript, CSS',
+    key_features: 'Wealth management services for mutual funds, insurance, bonds & retirement planning, Responsive user-friendly interface for simplified financial guidance, Structured service modules & information architecture for engagement, Investment exploration & service accessibility, Financial decision support tools',
+    image_url: '/images/idcard.png',
     image_urls: [
-      '/images/rupee-matrix-placeholder.svg'
+      '/images/idcard.png'
     ]
   }
 ]

@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Code, Award, Globe, FileText, ArrowUpRight, MapPin, Sparkles, User } from "lucide-react";
+import { Code, Award, Globe, FileText, ArrowUpRight, MapPin, Sparkles } from "lucide-react";
 import { supabase, isPlaceholder } from "@/lib/supabase";
 import { mockProjects, mockCertificates } from "@/lib/mockData";
 
@@ -804,15 +804,13 @@ __      ___   ___   _  _    _    __   __
 
             <div className="relative p-2.5 rounded-full border border-white/10 bg-black/40 backdrop-blur-md shadow-2xl group-hover:border-white/20 transition-colors duration-500">
               <div
-                className="w-40 h-40 md:w-44 md:h-44 rounded-full flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-white/5 to-violet-500/10 border border-dashed border-white/20 group-hover:border-violet-400/40 transition-all duration-700"
+                className="w-40 h-40 md:w-44 md:h-44 rounded-full overflow-hidden border border-dashed border-white/20 group-hover:border-violet-400/40 transition-all duration-700"
               >
-                <User size={52} className="text-white/25 group-hover:text-white/40 transition-colors duration-500" strokeWidth={1.2} />
-                <span
-                  style={{ fontFamily: "'DM Mono', monospace" }}
-                  className="text-[9px] tracking-[0.2em] text-white/20 group-hover:text-white/35 transition-colors duration-500 uppercase"
-                >
-                  placeholder
-                </span>
+                <img
+                  src="/images/profile.png"
+                  alt="Vibhav Patel"
+                  className="w-full h-full object-cover rounded-full group-hover:scale-105 transition-transform duration-700"
+                />
               </div>
             </div>
 
