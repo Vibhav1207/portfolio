@@ -23,9 +23,11 @@ extend({ MeshLineGeometry, MeshLineMaterial });
 
 const GLTF_PATH = '/assets/kartu.glb';
 const TEXTURE_PATH = '/assets/bandd.png';
+const CARD_TEXTURE_PATH = '/images/idcard.png';
 
 useGLTF.preload(GLTF_PATH);
 useTexture.preload(TEXTURE_PATH);
+useTexture.preload(CARD_TEXTURE_PATH);
 
 export default function App() {
   const [isMobile, setIsMobile] = useState(false);
@@ -135,6 +137,8 @@ function Band({ isMobile, maxSpeed = 50, minSpeed = 10 }) {
 
   const { nodes, materials } = useGLTF(GLTF_PATH);
   const texture = useTexture(TEXTURE_PATH);
+  const cardTexture = useTexture(CARD_TEXTURE_PATH);
+  cardTexture.flipY = false;
   const { width, height } = useThree((state) => state.size);
 
   const [curve] = useState(
@@ -260,11 +264,9 @@ function Band({ isMobile, maxSpeed = 50, minSpeed = 10 }) {
             }}
           >
             <mesh geometry={nodes.card.geometry}>
-              {/* Keep all card material properties but blank out the face photo texture */}
               <meshPhysicalMaterial
                 {...materials.base}
-                map={null}
-                color="#1e1b4b"
+                map={cardTexture}
               />
             </mesh>
             <mesh geometry={nodes.clip.geometry} material={materials.metal} />

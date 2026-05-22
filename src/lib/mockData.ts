@@ -35,9 +35,9 @@ export const mockProjects: MockProject[] = [
     github_url: '',
     technologies: 'React.js, Node.js, JavaScript, CSS',
     key_features: 'Wealth management services for mutual funds, insurance, bonds & retirement planning, Responsive user-friendly interface for simplified financial guidance, Structured service modules & information architecture for engagement, Investment exploration & service accessibility, Financial decision support tools',
-    image_url: '/images/idcard.png',
+    image_url: '/images/rupee-matrix-placeholder.svg',
     image_urls: [
-      '/images/idcard.png'
+      '/images/rupee-matrix-placeholder.svg'
     ]
   }
 ]
