@@ -76,7 +76,15 @@ export default function ContactForm() {
     setStatus('sending')
 
     try {
-      const res = await fetch('https://formspree.io/f/YOUR_FORMSPREE_ID', {
+      const formspreeId = process.env.NEXT_PUBLIC_FORMSPREE_ID
+      if (!formspreeId || formspreeId === 'YOUR_FORMSPREE_ID') {
+        console.error(
+          'NEXT_PUBLIC_FORMSPREE_ID is not configured in environment variables. Messages cannot be sent.'
+        )
+        throw new Error('Formspree ID is not configured')
+      }
+
+      const res = await fetch(`https://formspree.io/f/${formspreeId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
