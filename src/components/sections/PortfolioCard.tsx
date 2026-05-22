@@ -15,7 +15,7 @@ type Props = {
   id?: string
   image?: string
   live_url?: string
-  technologies?: string
+  technologies?: string | string[]
 }
 
 export default function PortfolioCard({
@@ -65,8 +65,10 @@ export default function PortfolioCard({
     y.set(0)
   }
 
-  // Parse technologies string into tag capsules
-  const tags = technologies
+  // Parse technologies string or array into tag capsules
+  const tags = Array.isArray(technologies)
+    ? technologies.slice(0, 3)
+    : typeof technologies === 'string' && technologies
     ? technologies.split(',').map((t) => t.trim()).slice(0, 3)
     : []
 

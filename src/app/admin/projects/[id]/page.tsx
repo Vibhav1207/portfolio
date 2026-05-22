@@ -86,34 +86,49 @@ export default function ProjectDetailPage() {
 };
 
   const handleUpdate = async () => {
-  const { error } = await supabase
-    .from("projects")
-    .update(form)
-    .eq("id", id);
+    const updatedForm = {
+      ...form,
+      technologies: Array.isArray(form.technologies)
+        ? form.technologies
+        : typeof form.technologies === "string"
+        ? form.technologies.split(",").map((t: string) => t.trim()).filter(Boolean)
+        : [],
+      key_features: Array.isArray(form.key_features)
+        ? form.key_features
+        : typeof form.key_features === "string"
+        ? form.key_features.split(",").map((f: string) => f.trim()).filter(Boolean)
+        : []
+    };
 
-  if (!error) {
-    setProject(form);
-    setEditMode(false);
+    const { error } = await supabase
+      .from("projects")
+      .update(updatedForm)
+      .eq("id", id);
 
-    Swal.fire({
-      title: "Berhasil",
-      text: "Project berhasil diperbarui.",
-      icon: "success",
-      timer: 1800,
-      showConfirmButton: false,
-      background: "#101010",
-      color: "#fff",
-    });
-  } else {
-    Swal.fire({
-      title: "Gagal",
-      text: "Update project gagal.",
-      icon: "error",
-      background: "#101010",
-      color: "#fff",
-    });
-  }
-};
+    if (!error) {
+      setProject(updatedForm);
+      setForm(updatedForm);
+      setEditMode(false);
+
+      Swal.fire({
+        title: "Berhasil",
+        text: "Project berhasil diperbarui.",
+        icon: "success",
+        timer: 1800,
+        showConfirmButton: false,
+        background: "#101010",
+        color: "#fff",
+      });
+    } else {
+      Swal.fire({
+        title: "Gagal",
+        text: "Update project gagal.",
+        icon: "error",
+        background: "#101010",
+        color: "#fff",
+      });
+    }
+  };
   if (!project)
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-white">
@@ -121,13 +136,17 @@ export default function ProjectDetailPage() {
       </div>
     );
 
-  const tech = (form.technologies || "")
-    .split(",")
-    .filter((t: string) => t.trim() !== "");
+  const tech = Array.isArray(form.technologies)
+    ? form.technologies
+    : typeof form.technologies === "string"
+    ? form.technologies.split(",").map((t: string) => t.trim()).filter(Boolean)
+    : [];
 
-  const features = (form.key_features || "")
-    .split(",")
-    .filter((f: string) => f.trim() !== "");
+  const features = Array.isArray(form.key_features)
+    ? form.key_features
+    : typeof form.key_features === "string"
+    ? form.key_features.split(",").map((f: string) => f.trim()).filter(Boolean)
+    : [];
 
   const galleryImages =
     project.image_urls && Array.isArray(project.image_urls)
