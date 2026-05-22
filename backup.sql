@@ -119,6 +119,12 @@ ON public.comments
 FOR SELECT
 USING (true);
 
+CREATE POLICY "Allow public update comments"
+ON public.comments
+FOR UPDATE
+USING (true)
+WITH CHECK (true);
+
 CREATE POLICY "Allow public read certificates"
 ON public.certificates
 FOR SELECT
