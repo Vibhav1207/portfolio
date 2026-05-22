@@ -1,10 +1,6 @@
-import { supabase, isPlaceholder } from '@/lib/supabase'
-import { mockProjects, mockCertificates, mockTechStacks } from './mockData'
+import { supabase } from '@/lib/supabase'
 
 export const fetchProjects = async () => {
-  if (isPlaceholder) {
-    return mockProjects
-  }
   try {
     const { data, error } = await supabase
       .from('projects')
@@ -13,19 +9,18 @@ export const fetchProjects = async () => {
         ascending: true,
       })
 
-    if (error || !data || data.length === 0) {
-      return mockProjects
+    if (error) {
+      console.error('Error fetching projects:', error)
+      return []
     }
-    return data
+    return data || []
   } catch (e) {
-    return mockProjects
+    console.error('Error in fetchProjects:', e)
+    return []
   }
 }
 
 export const fetchCertificates = async () => {
-  if (isPlaceholder) {
-    return mockCertificates
-  }
   try {
     const { data, error } = await supabase
       .from('certificates')
@@ -34,19 +29,18 @@ export const fetchCertificates = async () => {
         ascending: true,
       })
 
-    if (error || !data || data.length === 0) {
-      return mockCertificates
+    if (error) {
+      console.error('Error fetching certificates:', error)
+      return []
     }
-    return data
+    return data || []
   } catch (e) {
-    return mockCertificates
+    console.error('Error in fetchCertificates:', e)
+    return []
   }
 }
 
 export const fetchTechStacks = async () => {
-  if (isPlaceholder) {
-    return mockTechStacks
-  }
   try {
     const { data, error } = await supabase
       .from('tech_stack')
@@ -55,11 +49,13 @@ export const fetchTechStacks = async () => {
         ascending: true,
       })
 
-    if (error || !data || data.length === 0) {
-      return mockTechStacks
+    if (error) {
+      console.error('Error fetching tech stack:', error)
+      return []
     }
-    return data
+    return data || []
   } catch (e) {
-    return mockTechStacks
+    console.error('Error in fetchTechStacks:', e)
+    return []
   }
 }

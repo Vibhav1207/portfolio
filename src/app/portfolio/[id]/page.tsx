@@ -6,8 +6,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { supabase, isPlaceholder } from '@/lib/supabase'
-import { mockProjects } from '@/lib/mockData'
+import { supabase } from '@/lib/supabase'
 import {
   ArrowLeft,
   ChevronLeft,
@@ -44,13 +43,6 @@ export default function PortfolioDetailPage() {
   }, [])
 
   const fetchProject = async () => {
-    if (isPlaceholder) {
-      const projectData = mockProjects.find((p) => p.id === id)
-      if (projectData) {
-        setProject(projectData)
-      }
-      return
-    }
     try {
       const { data, error } = await supabase
         .from('projects')
@@ -58,19 +50,16 @@ export default function PortfolioDetailPage() {
         .eq('id', id)
         .single()
 
-      let projectData = data
-      if (error || !projectData) {
-        projectData = mockProjects.find((p) => p.id === id)
+      if (error) {
+        console.error('Error fetching project:', error)
+        return
       }
 
-      if (projectData) {
-        setProject(projectData)
+      if (data) {
+        setProject(data)
       }
     } catch (e) {
-      const projectData = mockProjects.find((p) => p.id === id)
-      if (projectData) {
-        setProject(projectData)
-      }
+      console.error('Exception fetching project:', e)
     }
   }
 

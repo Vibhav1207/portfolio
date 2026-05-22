@@ -12,6 +12,8 @@ CREATE TABLE public.certificates (
     id bigint NOT NULL,
     title text NOT NULL,
     image_url text,
+    type text,
+    proof_url text,
     created_at timestamp without time zone DEFAULT now()
 );
 
@@ -218,3 +220,81 @@ CREATE TRIGGER update_projects_updated_at
 BEFORE UPDATE ON public.projects
 FOR EACH ROW
 EXECUTE FUNCTION public.update_updated_at_column();
+
+-- ========================================
+-- SEED DATA
+-- ========================================
+
+-- Seed projects
+INSERT INTO public.projects (id, title, description, live_url, github_url, technologies, key_features, image_url, image_urls)
+VALUES (
+    'f7a1b2c3-d4e5-4789-abcd-f9ebeca01234',
+    'Rupee Matrix',
+    'Rupee Matrix is a finance and investment platform focused on wealth management services including mutual funds, insurance, bonds, and retirement planning. Built with a responsive and user-friendly interface to simplify financial guidance, investment exploration, and service accessibility. Features structured service modules and information architecture designed to improve user engagement and financial decision support.',
+    'https://rupeematrix.in',
+    '',
+    ARRAY['React.js', 'Node.js', 'JavaScript', 'CSS'],
+    ARRAY[
+        'Wealth management services for mutual funds, insurance, bonds & retirement planning',
+        'Responsive user-friendly interface for simplified financial guidance',
+        'Structured service modules & information architecture for engagement',
+        'Investment exploration & service accessibility',
+        'Financial decision support tools'
+    ],
+    '/images/rupee-matrix-placeholder.svg',
+    '["/images/rupee-matrix-placeholder.svg"]'::jsonb
+)
+ON CONFLICT (id) DO UPDATE SET
+    title = EXCLUDED.title,
+    description = EXCLUDED.description,
+    live_url = EXCLUDED.live_url,
+    github_url = EXCLUDED.github_url,
+    technologies = EXCLUDED.technologies,
+    key_features = EXCLUDED.key_features,
+    image_url = EXCLUDED.image_url,
+    image_urls = EXCLUDED.image_urls;
+
+-- Seed certificates
+INSERT INTO public.certificates (id, title, image_url, type, proof_url, created_at)
+VALUES 
+(
+    1,
+    'Meta Front-End Developer Professional Certificate',
+    'https://images.credly.com/size/680x680/images/e91ed0b0-842b-417f-8d2f-b07e52cc85a1/image.png',
+    'course',
+    'https://www.coursera.org/professional-certificates/meta-front-end-developer',
+    '2026-03-15 00:00:00'
+),
+(
+    2,
+    'Smart India Hackathon 2025 — Winner',
+    'https://upload.wikimedia.org/wikipedia/en/2/29/Smart_India_Hackathon_logo.png',
+    'achievement',
+    '',
+    '2025-12-10 00:00:00'
+)
+ON CONFLICT (id) DO UPDATE SET
+    title = EXCLUDED.title,
+    image_url = EXCLUDED.image_url,
+    type = EXCLUDED.type,
+    proof_url = EXCLUDED.proof_url,
+    created_at = EXCLUDED.created_at;
+
+-- Seed tech_stack
+INSERT INTO public.tech_stack (id, name, logo_url)
+VALUES
+(1, 'React', 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg'),
+(2, 'Next.js', 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg'),
+(3, 'TypeScript', 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg'),
+(4, 'Tailwind CSS', 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg'),
+(5, 'Node.js', 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg'),
+(6, 'PostgreSQL', 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg'),
+(7, 'Prisma', 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prisma/prisma-original.svg'),
+(8, 'Git', 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg'),
+(9, 'Supabase', 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/supabase/supabase-original.svg'),
+(10, 'Redux', 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redux/redux-original.svg'),
+(11, 'GraphQL', 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/graphql/graphql-plain.svg'),
+(12, 'Docker', 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg')
+ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    logo_url = EXCLUDED.logo_url;

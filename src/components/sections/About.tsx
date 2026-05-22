@@ -1,8 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Code, Award, Globe, FileText, ArrowUpRight, MapPin, Sparkles } from "lucide-react";
-import { supabase, isPlaceholder } from "@/lib/supabase";
-import { mockProjects, mockCertificates } from "@/lib/mockData";
+import { supabase } from "@/lib/supabase";
 
 interface TerminalLine {
   id: string;
@@ -630,11 +629,6 @@ __      ___   ___   _  _    _    __   __
   }, []);
 
   const fetchStats = async () => {
-    if (isPlaceholder) {
-      setProjectCount(mockProjects.length);
-      setCertificateCount(mockCertificates.length);
-      return;
-    }
     try {
       const { count: projects } = await supabase
         .from("projects")
@@ -644,13 +638,11 @@ __      ___   ___   _  _    _    __   __
         .from("certificates")
         .select("*", { count: "exact", head: true });
 
-      // Fall back to mock data counts when DB returns 0 or null
-      setProjectCount((projects && projects > 0) ? projects : mockProjects.length);
-      setCertificateCount((certificates && certificates > 0) ? certificates : mockCertificates.length);
+      setProjectCount(projects || 0);
+      setCertificateCount(certificates || 0);
     } catch {
-      // On error, still show mock data counts instead of 0
-      setProjectCount(mockProjects.length);
-      setCertificateCount(mockCertificates.length);
+      setProjectCount(0);
+      setCertificateCount(0);
     }
   };
 

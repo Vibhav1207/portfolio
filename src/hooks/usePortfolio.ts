@@ -6,7 +6,6 @@ import {
   fetchProjects,
   fetchTechStacks,
 } from '@/lib/portfolioService'
-import { mockProjects, mockCertificates, mockTechStacks } from '@/lib/mockData'
 
 export default function usePortfolio() {
   const [projects, setProjects] = useState<any[]>([])
@@ -38,18 +37,15 @@ export default function usePortfolio() {
       )
 
     if (cachedProjects) {
-      const parsed = JSON.parse(cachedProjects)
-      setProjects(parsed.length > 0 ? parsed : mockProjects)
+      setProjects(JSON.parse(cachedProjects))
     }
 
     if (cachedCertificates) {
-      const parsed = JSON.parse(cachedCertificates)
-      setCertificates(parsed.length > 0 ? parsed : mockCertificates)
+      setCertificates(JSON.parse(cachedCertificates))
     }
 
     if (cachedTechStacks) {
-      const parsed = JSON.parse(cachedTechStacks)
-      setTechStacks(parsed.length > 0 ? parsed : mockTechStacks)
+      setTechStacks(JSON.parse(cachedTechStacks))
     }
 
     const [
@@ -62,27 +58,23 @@ export default function usePortfolio() {
       fetchTechStacks(),
     ])
 
-    const finalProjects = (projectsData && projectsData.length > 0) ? projectsData : mockProjects
-    const finalCertificates = (certificatesData && certificatesData.length > 0) ? certificatesData : mockCertificates
-    const finalTechStacks = (techStacksData && techStacksData.length > 0) ? techStacksData : mockTechStacks
-
-    setProjects(finalProjects)
-    setCertificates(finalCertificates)
-    setTechStacks(finalTechStacks)
+    setProjects(projectsData || [])
+    setCertificates(certificatesData || [])
+    setTechStacks(techStacksData || [])
 
     sessionStorage.setItem(
       'portfolioProjects',
-      JSON.stringify(finalProjects)
+      JSON.stringify(projectsData || [])
     )
 
     sessionStorage.setItem(
       'portfolioCertificates',
-      JSON.stringify(finalCertificates)
+      JSON.stringify(certificatesData || [])
     )
 
     sessionStorage.setItem(
       'portfolioTechStacks',
-      JSON.stringify(finalTechStacks)
+      JSON.stringify(techStacksData || [])
     )
 
     setLoading(false)
