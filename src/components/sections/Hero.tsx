@@ -203,9 +203,7 @@ export default function Hero({ showApp }: HeroProps) {
               textWrap: "pretty",
             }}
           >
-            Menciptakan website modern dengan tampilan clean, responsif, dan
-            elegan. Mengubah ide dan desain menjadi pengalaman digital yang
-            menarik dan mudah digunakan.
+            Creating modern websites with a clean, responsive, and elegant appearance. Transforming ideas and designs into engaging and user-friendly digital experiences.
           </p>
         </motion.div>
 
