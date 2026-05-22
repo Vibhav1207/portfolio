@@ -43,7 +43,7 @@ export default function LoginPage() {
     setLoading(false);
 
     if (error) {
-      setErrorMsg("Invalid email or password");
+      setErrorMsg(error.message || "Invalid email or password");
     } else {
       setSuccessMsg("Login success, redirecting...");
       setTimeout(() => {
