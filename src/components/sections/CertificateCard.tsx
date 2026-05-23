@@ -89,28 +89,6 @@ export default function CertificateCard({
       className="card-glow-wrapper group relative p-4 flex flex-col border border-white/5 cursor-default transition-all duration-300 hover:bg-white/[0.04] overflow-hidden"
     >
       <div className="h-full flex flex-col relative z-10">
-        {/* Type Badge */}
-        {type && (
-          <div className="absolute top-2 right-2 z-20">
-            <span
-              style={{ fontFamily: "'DM Mono', monospace" }}
-              className={`text-[9px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full border backdrop-blur-md ${
-                type === 'achievement'
-                  ? 'bg-amber-500/15 border-amber-500/30 text-amber-300'
-                  : type === 'internship'
-                  ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
-                  : 'bg-violet-500/15 border-violet-500/30 text-violet-300'
-              }`}
-            >
-              {type === 'achievement'
-                ? '🏆 Achievement'
-                : type === 'internship'
-                ? '💼 Internship'
-                : '📚 Course'}
-            </span>
-          </div>
-        )}
-
         {/* Certificate Image */}
         <div className="w-full h-44 rounded-2xl overflow-hidden border border-white/10 bg-white/[0.02] mb-3 relative group-hover:border-white/20 transition-all duration-550">
           {image_url ? (
@@ -131,6 +109,28 @@ export default function CertificateCard({
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-75 group-hover:opacity-20 transition-opacity duration-550" />
         </div>
+
+        {/* Type Badge */}
+        {type && (
+          <div className="flex mb-2">
+            <span
+              style={{ fontFamily: "'DM Mono', monospace" }}
+              className={`text-[9px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full border ${
+                type === 'achievement'
+                  ? 'bg-amber-500/15 border-amber-500/30 text-amber-300'
+                  : type === 'internship'
+                  ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
+                  : 'bg-violet-500/15 border-violet-500/30 text-violet-300'
+              }`}
+            >
+              {type === 'achievement'
+                ? '🏆 Achievement'
+                : type === 'internship'
+                ? '💼 Internship'
+                : '📚 Course'}
+            </span>
+          </div>
+        )}
 
         {/* Title */}
         <h3 className="text-[16px] font-bold mb-1 leading-tight text-white/90 group-hover:text-white transition-colors duration-300 line-clamp-2 min-h-[44px]">
@@ -192,15 +192,6 @@ export default function CertificateCard({
             </button>
           ) : (
             <div className="text-[12px] text-white/30">No Proof</div>
-          )}
-
-          {type && (
-            <span
-              style={{ fontFamily: "'DM Mono', monospace" }}
-              className="text-[9px] text-white/25 tracking-wider uppercase"
-            >
-              {type}
-            </span>
           )}
         </div>
       </div>
