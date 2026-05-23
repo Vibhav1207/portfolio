@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Trash2, Pencil, X, Upload } from "lucide-react";
+import { Plus, Trash2, Pencil, X, Upload, Eye, EyeOff } from "lucide-react";
 import Sidebar from "@/app/admin/Sidebar";
 import { supabase } from "@/lib/supabase";
 import Swal from "sweetalert2";
@@ -22,6 +22,7 @@ export default function CertificatesPage() {
   const [endDate, setEndDate] = useState("");
   const [status, setStatus] = useState("");
   const [proofUrl, setProofUrl] = useState("");
+  const [isVisible, setIsVisible] = useState(true);
 
   const [saving, setSaving] = useState(false);
 
@@ -71,6 +72,7 @@ export default function CertificatesPage() {
     setEndDate("");
     setStatus("");
     setProofUrl("");
+    setIsVisible(true);
   };
 
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -128,6 +130,7 @@ export default function CertificatesPage() {
           start_date: startDate || null,
           end_date: endDate || null,
           status: status || null,
+          is_visible: isVisible,
         })
         .eq("id", editId);
       error = res.error;
@@ -142,6 +145,7 @@ export default function CertificatesPage() {
           start_date: startDate || null,
           end_date: endDate || null,
           status: status || null,
+          is_visible: isVisible,
         },
       ]);
       error = res.error;
@@ -227,6 +231,7 @@ export default function CertificatesPage() {
     setStartDate(item.start_date || "");
     setEndDate(item.end_date || "");
     setStatus(item.status || "");
+    setIsVisible(item.is_visible !== false);
     setOpen(true);
   };
 
@@ -291,17 +296,34 @@ export default function CertificatesPage() {
                     <h2 className="font-semibold text-[15px] line-clamp-2 min-h-[42px] flex-1">
                       {item.title}
                     </h2>
-                    {item.type && (
-                      <span className={`text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full border shrink-0 ${
-                        item.type === 'achievement'
-                          ? 'bg-amber-500/15 border-amber-500/30 text-amber-300'
-                          : item.type === 'internship'
-                          ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
-                          : 'bg-violet-500/15 border-violet-500/30 text-violet-300'
+                    <div className="flex flex-col gap-1 items-end shrink-0">
+                      {item.type && (
+                        <span className={`text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full border shrink-0 ${
+                          item.type === 'achievement'
+                            ? 'bg-amber-500/15 border-amber-500/30 text-amber-300'
+                            : item.type === 'internship'
+                            ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
+                            : 'bg-violet-500/15 border-violet-500/30 text-violet-300'
+                        }`}>
+                          {item.type === 'achievement' ? '🏆' : item.type === 'internship' ? '💼' : '📚'} {item.type}
+                        </span>
+                      )}
+                      <span className={`text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full border flex items-center gap-1 shrink-0 ${
+                        item.is_visible !== false
+                          ? 'bg-blue-500/15 border-blue-500/30 text-blue-300'
+                          : 'bg-red-500/15 border-red-500/30 text-red-300'
                       }`}>
-                        {item.type === 'achievement' ? '🏆' : item.type === 'internship' ? '💼' : '📚'} {item.type}
+                        {item.is_visible !== false ? (
+                          <>
+                            <Eye size={8} /> Visible
+                          </>
+                        ) : (
+                          <>
+                            <EyeOff size={8} /> Hidden
+                          </>
+                        )}
                       </span>
-                    )}
+                    </div>
                   </div>
 
                   {/* SUBTITLE */}
@@ -497,8 +519,22 @@ export default function CertificatesPage() {
               placeholder="Proof URL (optional — link to credential)"
               value={proofUrl}
               onChange={(e) => setProofUrl(e.target.value)}
-              className="w-full px-4 py-3 rounded-2xl bg-[#0f0f0f] border border-white/10 outline-none mb-5 text-sm"
+              className="w-full px-4 py-3 rounded-2xl bg-[#0f0f0f] border border-white/10 outline-none mb-4 text-sm"
             />
+
+            {/* VISIBILITY TOGGLE */}
+            <div className="flex items-center gap-3 mb-5 px-1">
+              <label className="relative inline-flex items-center cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={isVisible}
+                  onChange={(e) => setIsVisible(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-650"></div>
+                <span className="ml-3 text-sm font-medium text-white/80">Show on Portfolio</span>
+              </label>
+            </div>
 
             {/* BUTTON */}
             <div className="flex flex-col sm:flex-row justify-end gap-3">

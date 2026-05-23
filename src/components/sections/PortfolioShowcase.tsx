@@ -32,6 +32,9 @@ export default function PortfolioShowcase() {
   const [certFilter, setCertFilter] =
     useState<'all' | 'course' | 'achievement' | 'internship'>('all')
 
+  const [showAllCertificates, setShowAllCertificates] =
+    useState(false)
+
   const [previewOpen, setPreviewOpen] =
     useState(false)
 
@@ -300,60 +303,105 @@ export default function PortfolioShowcase() {
             )}
 
             {/* CERTIFICATES */}
-            {activeTab === 'certificates' && (
-              <div className="space-y-6">
-                {/* SUB-FILTER */}
-                <div className="flex justify-center gap-2 mb-8 flex-wrap">
-                  {[
-                    { id: 'all', label: 'All', icon: '✨' },
-                    { id: 'course', label: 'Courses', icon: '📚' },
-                    { id: 'achievement', label: 'Awards', icon: '🏆' },
-                    { id: 'internship', label: 'Internships', icon: '💼' },
-                  ].map((filter) => {
-                    const isSelected = certFilter === filter.id;
-                    return (
-                      <button
-                        key={filter.id}
-                        onClick={() => setCertFilter(filter.id as any)}
-                        className={`px-4 py-1.5 rounded-full text-[11px] font-semibold transition-all border flex items-center gap-1.5 cursor-pointer ${
-                          isSelected
-                            ? 'bg-white/10 border-white/20 text-white'
-                            : 'bg-transparent border-white/5 text-white/50 hover:text-white/80 hover:border-white/10'
-                        }`}
-                        style={{ fontFamily: "'DM Mono', monospace" }}
-                      >
-                        <span>{filter.icon}</span>
-                        <span>{filter.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
+            {activeTab === 'certificates' && (() => {
+              const visibleCerts = certificates.filter((item) => item.is_visible !== false);
+              const filteredCertsList = visibleCerts.filter(
+                (item) => certFilter === 'all' || item.type === certFilter
+              );
+              const displayedCerts = showAllCertificates
+                ? filteredCertsList
+                : filteredCertsList.slice(0, 3);
 
-                <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 px-1">
-                  {!loading &&
-                    certificates
-                      .filter((item) => certFilter === 'all' || item.type === certFilter)
-                      .map((item, i) => (
-                        <CertificateCard
-                          key={item.id}
-                          index={i}
-                          title={item.title}
-                          subtitle={item.subtitle}
-                          image_url={item.image_url}
-                          type={item.type}
-                          proof_url={item.proof_url}
-                          start_date={item.start_date}
-                          end_date={item.end_date}
-                          status={item.status}
-                          onPreview={(url) => {
-                            setPreviewImage(url)
-                            setPreviewOpen(true)
+              return (
+                <div className="space-y-8">
+                  {/* SUB-FILTER */}
+                  <div className="flex justify-center gap-2 mb-8 flex-wrap">
+                    {[
+                      { id: 'all', label: 'All' },
+                      { id: 'course', label: 'Courses' },
+                      { id: 'achievement', label: 'Awards' },
+                      { id: 'internship', label: 'Internships' },
+                    ].map((filter) => {
+                      const isSelected = certFilter === filter.id;
+                      return (
+                        <button
+                          key={filter.id}
+                          onClick={() => {
+                            setCertFilter(filter.id as any);
+                            setShowAllCertificates(false); // Reset to show 3 when filter changes
                           }}
-                        />
-                      ))}
+                          className={`px-4 py-1.5 rounded-full text-[11px] font-semibold transition-all border flex items-center gap-1.5 cursor-pointer ${
+                            isSelected
+                              ? 'bg-white/10 border-white/20 text-white'
+                              : 'bg-transparent border-white/5 text-white/50 hover:text-white/80 hover:border-white/10'
+                          }`}
+                          style={{ fontFamily: "'DM Mono', monospace" }}
+                        >
+                          <span>{filter.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <motion.div
+                    layout
+                    className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 px-1"
+                  >
+                    <AnimatePresence mode="popLayout">
+                      {!loading &&
+                        displayedCerts.map((item, i) => (
+                          <motion.div
+                            key={item.id}
+                            layout
+                            initial={{ opacity: 0, y: 30, scale: 0.97 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                            transition={{ duration: 0.4, delay: i * 0.04 }}
+                          >
+                            <CertificateCard
+                              index={i}
+                              title={item.title}
+                              subtitle={item.subtitle}
+                              image_url={item.image_url}
+                              type={item.type}
+                              proof_url={item.proof_url}
+                              start_date={item.start_date}
+                              end_date={item.end_date}
+                              status={item.status}
+                              onPreview={(url) => {
+                                setPreviewImage(url)
+                                setPreviewOpen(true)
+                              }}
+                            />
+                          </motion.div>
+                        ))}
+                    </AnimatePresence>
+                  </motion.div>
+
+                  {/* SEE MORE / LESS */}
+                  {!loading && filteredCertsList.length > 3 && (
+                    <div className="flex justify-center mt-6">
+                      <button
+                        onClick={() => setShowAllCertificates(!showAllCertificates)}
+                        className="px-6 py-3 rounded-full border border-white/10 bg-white/[0.05] backdrop-blur-xl text-sm text-white/75 hover:text-white transition flex items-center gap-2 cursor-pointer"
+                      >
+                        {showAllCertificates ? (
+                          <>
+                            <ChevronUp size={16} />
+                            See Less
+                          </>
+                        ) : (
+                          <>
+                            <ChevronDown size={16} />
+                            See More
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  )}
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             {/* TECH STACK */}
             {/* TECH STACK */}
