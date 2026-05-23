@@ -263,7 +263,7 @@ export default function ContactForm() {
 
         {/* LINKEDIN */}
         <motion.a
-          href="https://www.linkedin.com/in/vibhav-patel/"
+          href="https://www.linkedin.com/in/vibhavpatel/"
           target="_blank"
           rel="noopener noreferrer"
           variants={fieldVariants}

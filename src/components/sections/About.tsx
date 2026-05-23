@@ -323,7 +323,7 @@ __      ___   ___   _  _    _    __   __
         <div className="space-y-1 text-inherit opacity-90 pl-2">
           <div className="opacity-50">Get in touch:</div>
           <div>GitHub: <a href="https://github.com/Vibhav" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hacker:text-emerald-400 cyberpunk:text-pink-400 hover:underline">github.com/Vibhav1207</a></div>
-          <div>LinkedIn: <a href="https://www.linkedin.com/in/vibhav-patel/" target="_blank" rel="noopener noreferrer" className="text-violet-400 hacker:text-emerald-400 cyberpunk:text-pink-400 hover:underline">linkedin.com/in/vibhavpatel</a></div>
+          <div>LinkedIn: <a href="https://www.linkedin.com/in/vibhavpatel/" target="_blank" rel="noopener noreferrer" className="text-violet-400 hacker:text-emerald-400 cyberpunk:text-pink-400 hover:underline">linkedin.com/in/vibhavpatel</a></div>
           <div>Instagram: <a href="https://www.instagram.com/Vibhav" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hacker:text-emerald-400 cyberpunk:text-pink-400 hover:underline">vibhav.patel07</a></div>
         </div>
       );
