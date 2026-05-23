@@ -8,6 +8,13 @@ export const metadata: Metadata = {
     template: "%s | Vibhav Patel"
   },
   description: "Welcome to my portfolio! I am Vibhav Patel, a Frontend Developer creating modern, responsive, and high-performance websites using React, Next.js, TypeScript, and Tailwind CSS.",
+  icons: {
+    icon: [
+      { url: "/space.svg", type: "image/svg+xml" }
+    ],
+    shortcut: "/space.svg",
+    apple: "/space.svg"
+  },
   keywords: [
     "Vibhav Patel",
     "Frontend Developer",
