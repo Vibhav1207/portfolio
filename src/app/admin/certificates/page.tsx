@@ -96,17 +96,28 @@ export default function CertificatesPage() {
         .from("certificates")
         .upload(fileName, image);
 
-      if (!uploadError) {
-        const { data } = supabase.storage
-          .from("certificates")
-          .getPublicUrl(fileName);
-
-        imageUrl = data.publicUrl;
+      if (uploadError) {
+        setSaving(false);
+        Swal.fire({
+          title: "Upload Failed",
+          text: uploadError.message,
+          icon: "error",
+          background: "#111",
+          color: "#fff",
+        });
+        return;
       }
+
+      const { data } = supabase.storage
+        .from("certificates")
+        .getPublicUrl(fileName);
+
+      imageUrl = data.publicUrl;
     }
 
+    let error;
     if (editId) {
-      await supabase
+      const res = await supabase
         .from("certificates")
         .update({
           title,
@@ -119,8 +130,9 @@ export default function CertificatesPage() {
           status: status || null,
         })
         .eq("id", editId);
+      error = res.error;
     } else {
-      await supabase.from("certificates").insert([
+      const res = await supabase.from("certificates").insert([
         {
           title,
           subtitle: subtitle || null,
@@ -132,13 +144,35 @@ export default function CertificatesPage() {
           status: status || null,
         },
       ]);
+      error = res.error;
     }
 
     setSaving(false);
-setOpen(false);
-resetForm();
 
-fetchCertificates();
+    if (error) {
+      Swal.fire({
+        title: "Save Failed",
+        text: error.message || "Failed to save certificate.",
+        icon: "error",
+        background: "#111",
+        color: "#fff",
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: "Saved!",
+      text: "Certificate saved successfully.",
+      icon: "success",
+      timer: 1500,
+      showConfirmButton: false,
+      background: "#111",
+      color: "#fff",
+    });
+
+    setOpen(false);
+    resetForm();
+    fetchCertificates();
   };
 
   const handleDelete = async (id: number) => {
