@@ -22,7 +22,7 @@ export default function Hero({ showApp }: HeroProps) {
       return;
     }
 
-    const delay = 3600;
+    const delay = 2200;
 
     const textTimer = setTimeout(() => {
       setStartAnim(true);
@@ -168,7 +168,7 @@ export default function Hero({ showApp }: HeroProps) {
             }}
           >
             <TextType
-              text={["Junior Programmer", "fresh Graduate", "Happy coding!"]}
+              text={["Junior Programmer", "Undergraduate", "Happy coding!"]}
               typingSpeed={75}
               pauseDuration={1500}
               showCursor
