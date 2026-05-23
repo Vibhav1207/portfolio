@@ -29,6 +29,9 @@ export default function PortfolioShowcase() {
   const [activeTab, setActiveTab] =
     useState('projects')
 
+  const [certFilter, setCertFilter] =
+    useState<'all' | 'course' | 'achievement' | 'internship'>('all')
+
   const [previewOpen, setPreviewOpen] =
     useState(false)
 
@@ -298,26 +301,57 @@ export default function PortfolioShowcase() {
 
             {/* CERTIFICATES */}
             {activeTab === 'certificates' && (
-              <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 px-1">
-                {!loading &&
-                  certificates.map((item, i) => (
-                    <CertificateCard
-                      key={item.id}
-                      index={i}
-                      title={item.title}
-                      subtitle={item.subtitle}
-                      image_url={item.image_url}
-                      type={item.type}
-                      proof_url={item.proof_url}
-                      start_date={item.start_date}
-                      end_date={item.end_date}
-                      status={item.status}
-                      onPreview={(url) => {
-                        setPreviewImage(url)
-                        setPreviewOpen(true)
-                      }}
-                    />
-                  ))}
+              <div className="space-y-6">
+                {/* SUB-FILTER */}
+                <div className="flex justify-center gap-2 mb-8 flex-wrap">
+                  {[
+                    { id: 'all', label: 'All', icon: '✨' },
+                    { id: 'course', label: 'Courses', icon: '📚' },
+                    { id: 'achievement', label: 'Awards', icon: '🏆' },
+                    { id: 'internship', label: 'Internships', icon: '💼' },
+                  ].map((filter) => {
+                    const isSelected = certFilter === filter.id;
+                    return (
+                      <button
+                        key={filter.id}
+                        onClick={() => setCertFilter(filter.id as any)}
+                        className={`px-4 py-1.5 rounded-full text-[11px] font-semibold transition-all border flex items-center gap-1.5 cursor-pointer ${
+                          isSelected
+                            ? 'bg-white/10 border-white/20 text-white'
+                            : 'bg-transparent border-white/5 text-white/50 hover:text-white/80 hover:border-white/10'
+                        }`}
+                        style={{ fontFamily: "'DM Mono', monospace" }}
+                      >
+                        <span>{filter.icon}</span>
+                        <span>{filter.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 px-1">
+                  {!loading &&
+                    certificates
+                      .filter((item) => certFilter === 'all' || item.type === certFilter)
+                      .map((item, i) => (
+                        <CertificateCard
+                          key={item.id}
+                          index={i}
+                          title={item.title}
+                          subtitle={item.subtitle}
+                          image_url={item.image_url}
+                          type={item.type}
+                          proof_url={item.proof_url}
+                          start_date={item.start_date}
+                          end_date={item.end_date}
+                          status={item.status}
+                          onPreview={(url) => {
+                            setPreviewImage(url)
+                            setPreviewOpen(true)
+                          }}
+                        />
+                      ))}
+                </div>
               </div>
             )}
 

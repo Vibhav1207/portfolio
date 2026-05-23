@@ -6,6 +6,7 @@ import {
   fetchProjects,
   fetchTechStacks,
 } from '@/lib/portfolioService'
+import { supabase } from '@/lib/supabase'
 
 export default function usePortfolio() {
   const [projects, setProjects] = useState<any[]>([])
@@ -18,6 +19,54 @@ export default function usePortfolio() {
 
   useEffect(() => {
     loadPortfolio()
+
+    // Real-time listener for projects
+    const projectsChannel = supabase
+      .channel('projects-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'projects' },
+        async () => {
+          const data = await fetchProjects()
+          setProjects(data || [])
+          sessionStorage.setItem('portfolioProjects', JSON.stringify(data || []))
+        }
+      )
+      .subscribe()
+
+    // Real-time listener for certificates
+    const certsChannel = supabase
+      .channel('certificates-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'certificates' },
+        async () => {
+          const data = await fetchCertificates()
+          setCertificates(data || [])
+          sessionStorage.setItem('portfolioCertificates', JSON.stringify(data || []))
+        }
+      )
+      .subscribe()
+
+    // Real-time listener for tech_stack
+    const techChannel = supabase
+      .channel('tech-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'tech_stack' },
+        async () => {
+          const data = await fetchTechStacks()
+          setTechStacks(data || [])
+          sessionStorage.setItem('portfolioTechStacks', JSON.stringify(data || []))
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(projectsChannel)
+      supabase.removeChannel(certsChannel)
+      supabase.removeChannel(techChannel)
+    }
   }, [])
 
   const loadPortfolio = async () => {
