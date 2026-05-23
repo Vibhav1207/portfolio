@@ -104,7 +104,7 @@ export default function LoginPage() {
 
               <input
                 type="email"
-                placeholder="masukan email"
+                placeholder="Enter email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full h-[56px] rounded-2xl bg-[#0c0c0c] border border-white/10 pl-12 pr-4 text-white outline-none focus:border-white/20 transition"
@@ -126,7 +126,7 @@ export default function LoginPage() {
 
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder="masukan password"
+                placeholder="Enter password"
                 value={password}
                 onChange={(e) =>
                   setPassword(e.target.value)
