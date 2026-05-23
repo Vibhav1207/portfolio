@@ -305,7 +305,12 @@ export default function PortfolioShowcase() {
             {/* CERTIFICATES */}
             {activeTab === 'certificates' && (() => {
               const visibleCerts = certificates.filter((item) => item.is_visible !== false);
-              const filteredCertsList = visibleCerts.filter(
+              const sortedCerts = [...visibleCerts].sort((a, b) => {
+                const aFeatured = a.is_featured ? 1 : 0;
+                const bFeatured = b.is_featured ? 1 : 0;
+                return bFeatured - aFeatured;
+              });
+              const filteredCertsList = sortedCerts.filter(
                 (item) => certFilter === 'all' || item.type === certFilter
               );
               const displayedCerts = showAllCertificates

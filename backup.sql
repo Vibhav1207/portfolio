@@ -19,6 +19,7 @@ CREATE TABLE public.certificates (
     end_date text,
     status text,
     is_visible boolean DEFAULT true,
+    is_featured boolean DEFAULT false,
     created_at timestamp without time zone DEFAULT now()
 );
 
@@ -260,7 +261,7 @@ ON CONFLICT (id) DO UPDATE SET
     image_urls = EXCLUDED.image_urls;
 
 -- Seed certificates
-INSERT INTO public.certificates (id, title, subtitle, image_url, type, proof_url, start_date, end_date, status, is_visible, created_at)
+INSERT INTO public.certificates (id, title, subtitle, image_url, type, proof_url, start_date, end_date, status, is_visible, is_featured, created_at)
 VALUES 
 (
     1,
@@ -272,6 +273,7 @@ VALUES
     '2025-09-15',
     '2026-03-15',
     'Completed',
+    true,
     true,
     '2026-03-15 00:00:00'
 ),
@@ -286,6 +288,7 @@ VALUES
     '2025-12-10',
     'Completed',
     true,
+    true,
     '2025-12-10 00:00:00'
 )
 ON CONFLICT (id) DO UPDATE SET
@@ -298,6 +301,7 @@ ON CONFLICT (id) DO UPDATE SET
     end_date = EXCLUDED.end_date,
     status = EXCLUDED.status,
     is_visible = EXCLUDED.is_visible,
+    is_featured = EXCLUDED.is_featured,
     created_at = EXCLUDED.created_at;
 
 -- Seed tech_stack
