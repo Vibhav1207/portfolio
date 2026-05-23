@@ -305,9 +305,13 @@ export default function PortfolioShowcase() {
                       key={item.id}
                       index={i}
                       title={item.title}
+                      subtitle={item.subtitle}
                       image_url={item.image_url}
                       type={item.type}
                       proof_url={item.proof_url}
+                      start_date={item.start_date}
+                      end_date={item.end_date}
+                      status={item.status}
                       onPreview={(url) => {
                         setPreviewImage(url)
                         setPreviewOpen(true)

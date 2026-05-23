@@ -11,9 +11,13 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE TABLE public.certificates (
     id bigint NOT NULL,
     title text NOT NULL,
+    subtitle text,
     image_url text,
     type text,
     proof_url text,
+    start_date text,
+    end_date text,
+    status text,
     created_at timestamp without time zone DEFAULT now()
 );
 
@@ -255,29 +259,41 @@ ON CONFLICT (id) DO UPDATE SET
     image_urls = EXCLUDED.image_urls;
 
 -- Seed certificates
-INSERT INTO public.certificates (id, title, image_url, type, proof_url, created_at)
+INSERT INTO public.certificates (id, title, subtitle, image_url, type, proof_url, start_date, end_date, status, created_at)
 VALUES 
 (
     1,
     'Meta Front-End Developer Professional Certificate',
+    'Meta / Coursera',
     'https://images.credly.com/size/680x680/images/e91ed0b0-842b-417f-8d2f-b07e52cc85a1/image.png',
     'course',
     'https://www.coursera.org/professional-certificates/meta-front-end-developer',
+    '2025-09-15',
+    '2026-03-15',
+    'Completed',
     '2026-03-15 00:00:00'
 ),
 (
     2,
     'Smart India Hackathon 2025 — Winner',
+    'Ministry of Education, Govt. of India',
     'https://upload.wikimedia.org/wikipedia/en/2/29/Smart_India_Hackathon_logo.png',
     'achievement',
     '',
+    '2025-12-08',
+    '2025-12-10',
+    'Completed',
     '2025-12-10 00:00:00'
 )
 ON CONFLICT (id) DO UPDATE SET
     title = EXCLUDED.title,
+    subtitle = EXCLUDED.subtitle,
     image_url = EXCLUDED.image_url,
     type = EXCLUDED.type,
     proof_url = EXCLUDED.proof_url,
+    start_date = EXCLUDED.start_date,
+    end_date = EXCLUDED.end_date,
+    status = EXCLUDED.status,
     created_at = EXCLUDED.created_at;
 
 -- Seed tech_stack

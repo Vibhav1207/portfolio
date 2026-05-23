@@ -6,18 +6,26 @@ import { ArrowUpRight } from 'lucide-react'
 
 type Props = {
   title: string
+  subtitle?: string
   image_url: string
-  type?: 'achievement' | 'course'
+  type?: 'achievement' | 'course' | 'internship'
   proof_url?: string
+  start_date?: string
+  end_date?: string
+  status?: string
   index: number
   onPreview: (url: string) => void
 }
 
 export default function CertificateCard({
   title,
+  subtitle,
   image_url,
   type,
   proof_url,
+  start_date,
+  end_date,
+  status,
   index,
   onPreview,
 }: Props) {
@@ -89,10 +97,16 @@ export default function CertificateCard({
               className={`text-[9px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full border backdrop-blur-md ${
                 type === 'achievement'
                   ? 'bg-amber-500/15 border-amber-500/30 text-amber-300'
+                  : type === 'internship'
+                  ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
                   : 'bg-violet-500/15 border-violet-500/30 text-violet-300'
               }`}
             >
-              {type === 'achievement' ? '🏆 Achievement' : '📚 Course'}
+              {type === 'achievement'
+                ? '🏆 Achievement'
+                : type === 'internship'
+                ? '💼 Internship'
+                : '📚 Course'}
             </span>
           </div>
         )}
@@ -119,9 +133,36 @@ export default function CertificateCard({
         </div>
 
         {/* Title */}
-        <h3 className="text-[16px] font-bold mb-2 leading-tight text-white/90 group-hover:text-white transition-colors duration-300 line-clamp-2 min-h-[44px]">
+        <h3 className="text-[16px] font-bold mb-1 leading-tight text-white/90 group-hover:text-white transition-colors duration-300 line-clamp-2 min-h-[44px]">
           {title}
         </h3>
+
+        {/* Subtitle */}
+        {subtitle && (
+          <p className="text-[13px] text-white/60 mb-2 leading-snug font-medium truncate">
+            {subtitle}
+          </p>
+        )}
+
+        {/* Date & Status Row */}
+        {(start_date || end_date || status) && (
+          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 mb-3 text-[11px] text-white/45" style={{ fontFamily: "'DM Mono', monospace" }}>
+            {(start_date || end_date) && (
+              <span className="flex items-center gap-1">
+                📅 {start_date || 'N/A'} - {end_date || 'Present'}
+              </span>
+            )}
+            {status && (
+              <span className={`px-2 py-0.5 rounded text-[10px] border ${
+                status.toLowerCase().includes('ongoing') || status.toLowerCase().includes('active')
+                  ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-300'
+                  : 'bg-white/5 border-white/10 text-white/70'
+              }`}>
+                {status}
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Proof Button */}
         <div className="mt-auto pt-3 border-t border-white/5 flex items-center justify-between">

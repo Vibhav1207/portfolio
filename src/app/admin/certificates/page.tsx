@@ -16,7 +16,11 @@ export default function CertificatesPage() {
   const [title, setTitle] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState("");
-  const [certType, setCertType] = useState<'achievement' | 'course'>('course');
+  const [certType, setCertType] = useState<'achievement' | 'course' | 'internship'>('course');
+  const [subtitle, setSubtitle] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [status, setStatus] = useState("");
   const [proofUrl, setProofUrl] = useState("");
 
   const [saving, setSaving] = useState(false);
@@ -58,10 +62,14 @@ export default function CertificatesPage() {
 
   const resetForm = () => {
     setTitle("");
+    setSubtitle("");
     setImage(null);
     setPreview("");
     setEditId(null);
     setCertType('course');
+    setStartDate("");
+    setEndDate("");
+    setStatus("");
     setProofUrl("");
   };
 
@@ -102,18 +110,26 @@ export default function CertificatesPage() {
         .from("certificates")
         .update({
           title,
+          subtitle: subtitle || null,
           image_url: imageUrl,
           type: certType,
           proof_url: proofUrl || null,
+          start_date: startDate || null,
+          end_date: endDate || null,
+          status: status || null,
         })
         .eq("id", editId);
     } else {
       await supabase.from("certificates").insert([
         {
           title,
+          subtitle: subtitle || null,
           image_url: imageUrl,
           type: certType,
           proof_url: proofUrl || null,
+          start_date: startDate || null,
+          end_date: endDate || null,
+          status: status || null,
         },
       ]);
     }
@@ -169,10 +185,14 @@ fetchCertificates();
 
   const handleEdit = (item: any) => {
     setTitle(item.title);
+    setSubtitle(item.subtitle || "");
     setPreview(item.image_url);
     setEditId(item.id);
     setCertType(item.type || 'course');
     setProofUrl(item.proof_url || "");
+    setStartDate(item.start_date || "");
+    setEndDate(item.end_date || "");
+    setStatus(item.status || "");
     setOpen(true);
   };
 
@@ -233,7 +253,7 @@ fetchCertificates();
                   </div>
 
                   {/* TITLE + TYPE */}
-                  <div className="flex items-start justify-between gap-2 mb-3">
+                  <div className="flex items-start justify-between gap-2 mb-1">
                     <h2 className="font-semibold text-[15px] line-clamp-2 min-h-[42px] flex-1">
                       {item.title}
                     </h2>
@@ -241,12 +261,33 @@ fetchCertificates();
                       <span className={`text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full border shrink-0 ${
                         item.type === 'achievement'
                           ? 'bg-amber-500/15 border-amber-500/30 text-amber-300'
+                          : item.type === 'internship'
+                          ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
                           : 'bg-violet-500/15 border-violet-500/30 text-violet-300'
                       }`}>
-                        {item.type === 'achievement' ? '🏆' : '📚'} {item.type}
+                        {item.type === 'achievement' ? '🏆' : item.type === 'internship' ? '💼' : '📚'} {item.type}
                       </span>
                     )}
                   </div>
+
+                  {/* SUBTITLE */}
+                  {item.subtitle && (
+                    <p className="text-[12px] text-white/60 mb-2 truncate">
+                      {item.subtitle}
+                    </p>
+                  )}
+
+                  {/* DATE & STATUS */}
+                  {(item.start_date || item.end_date || item.status) && (
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-2 text-[11px] text-white/40" style={{ fontFamily: "'DM Mono', monospace" }}>
+                      {(item.start_date || item.end_date) && (
+                        <span>📅 {item.start_date || 'N/A'} - {item.end_date || 'Present'}</span>
+                      )}
+                      {item.status && (
+                        <span className="px-1.5 py-0.2 rounded border border-white/10 bg-white/5">{item.status}</span>
+                      )}
+                    </div>
+                  )}
 
                   {/* DATE */}
                   <span className="text-[11px] text-white/30 mb-4">
@@ -330,14 +371,22 @@ fetchCertificates();
               className="w-full px-4 py-3 rounded-2xl bg-[#0f0f0f] border border-white/10 outline-none mb-4 text-sm"
             />
 
+            {/* SUBTITLE */}
+            <input
+              placeholder="Subtitle (e.g., Organization, Issuer) (optional)"
+              value={subtitle}
+              onChange={(e) => setSubtitle(e.target.value)}
+              className="w-full px-4 py-3 rounded-2xl bg-[#0f0f0f] border border-white/10 outline-none mb-4 text-sm"
+            />
+
             {/* TYPE */}
             <div className="mb-4">
               <label className="text-[11px] text-white/40 uppercase tracking-wider mb-2 block" style={{ fontFamily: "'DM Mono', monospace" }}>Type</label>
-              <div className="flex gap-3">
+              <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => setCertType('course')}
-                  className={`flex-1 px-4 py-3 rounded-2xl border text-sm transition-all ${
+                  className={`flex-1 px-3 py-2.5 rounded-2xl border text-xs sm:text-sm transition-all ${
                     certType === 'course'
                       ? 'bg-violet-500/15 border-violet-500/30 text-violet-300'
                       : 'bg-[#0f0f0f] border-white/10 text-white/50 hover:border-white/20'
@@ -348,15 +397,65 @@ fetchCertificates();
                 <button
                   type="button"
                   onClick={() => setCertType('achievement')}
-                  className={`flex-1 px-4 py-3 rounded-2xl border text-sm transition-all ${
+                  className={`flex-1 px-3 py-2.5 rounded-2xl border text-xs sm:text-sm transition-all ${
                     certType === 'achievement'
                       ? 'bg-amber-500/15 border-amber-500/30 text-amber-300'
                       : 'bg-[#0f0f0f] border-white/10 text-white/50 hover:border-white/20'
                   }`}
                 >
-                  🏆 Achievement
+                  🏆 Award
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCertType('internship')}
+                  className={`flex-1 px-3 py-2.5 rounded-2xl border text-xs sm:text-sm transition-all ${
+                    certType === 'internship'
+                      ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
+                      : 'bg-[#0f0f0f] border-white/10 text-white/50 hover:border-white/20'
+                  }`}
+                >
+                  💼 Intern
                 </button>
               </div>
+            </div>
+
+            {/* DATES */}
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div>
+                <label className="text-[11px] text-white/40 uppercase tracking-wider mb-2 block" style={{ fontFamily: "'DM Mono', monospace" }}>
+                  Start Date {certType !== 'internship' && '(optional)'}
+                </label>
+                <input
+                  placeholder="e.g. May 2025"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-full px-4 py-3 rounded-2xl bg-[#0f0f0f] border border-white/10 outline-none text-sm"
+                />
+              </div>
+              <div>
+                <label className="text-[11px] text-white/40 uppercase tracking-wider mb-2 block" style={{ fontFamily: "'DM Mono', monospace" }}>
+                  End Date {certType !== 'internship' && '(optional)'}
+                </label>
+                <input
+                  placeholder="e.g. Present"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="w-full px-4 py-3 rounded-2xl bg-[#0f0f0f] border border-white/10 outline-none text-sm"
+                />
+              </div>
+            </div>
+
+            {/* STATUS */}
+            <div className="mb-4">
+              <label className="text-[11px] text-white/40 uppercase tracking-wider mb-2 block" style={{ fontFamily: "'DM Mono', monospace" }}>
+                Status {certType !== 'internship' && '(optional)'}
+              </label>
+              <input
+                placeholder="e.g. Completed, Ongoing"
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="w-full px-4 py-3 rounded-2xl bg-[#0f0f0f] border border-white/10 outline-none text-sm"
+              />
             </div>
 
             {/* PROOF URL */}
