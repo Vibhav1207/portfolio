@@ -284,7 +284,7 @@ export default function ContactForm() {
 
             <div>
               <p className="text-sm font-medium">LinkedIn</p>
-              <p className="text-xs text-white/35">@vibhav-patel</p>
+              <p className="text-xs text-white/35">@vibhavpatel</p>
             </div>
           </div>
 
