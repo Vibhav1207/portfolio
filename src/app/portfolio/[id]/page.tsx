@@ -20,6 +20,8 @@ import {
   Box,
 } from 'lucide-react'
 
+import { normalizeImageUrl } from '@/lib/storageUtils'
+
 export default function PortfolioDetailPage() {
   const { id } = useParams()
   const router = useRouter()
@@ -75,12 +77,14 @@ export default function PortfolioDetailPage() {
     ? project.key_features.split(',').map((f: string) => f.trim()).filter(Boolean)
     : []
 
-  const galleryImages =
+  const rawGallery =
     project?.image_urls && Array.isArray(project.image_urls)
       ? project.image_urls
       : project?.image_url
       ? [project.image_url]
       : []
+
+  const galleryImages = rawGallery.map(normalizeImageUrl).filter(Boolean)
 
   const nextImage = () => {
     if (currentImage < galleryImages.length - 1) {

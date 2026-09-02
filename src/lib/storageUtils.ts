@@ -50,3 +50,24 @@ export async function uploadFileToStorage(
     return { publicUrl: null, error: err };
   }
 }
+
+/**
+ * Normalizes external image URLs (e.g. Google Drive share links, Dropbox) into direct image URLs.
+ */
+export function normalizeImageUrl(url: string | null | undefined): string {
+  if (!url || typeof url !== "string") return "";
+  const trimmed = url.trim();
+
+  // Google Drive URL handling
+  const gdriveMatch = trimmed.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (gdriveMatch && gdriveMatch[1]) {
+    return `https://lh3.googleusercontent.com/d/${gdriveMatch[1]}`;
+  }
+
+  // Dropbox URL handling
+  if (trimmed.includes("dropbox.com")) {
+    return trimmed.replace("dl=0", "raw=1");
+  }
+
+  return trimmed;
+}

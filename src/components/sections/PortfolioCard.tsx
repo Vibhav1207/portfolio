@@ -8,6 +8,7 @@ import {
   FolderGit2,
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { normalizeImageUrl } from '@/lib/storageUtils'
 
 type Props = {
   title: string
@@ -31,6 +32,7 @@ export default function PortfolioCard({
   const router = useRouter()
   const cardRef = useRef<HTMLDivElement>(null)
   const [imgError, setImgError] = useState(false)
+  const displayImage = normalizeImageUrl(image)
 
   // Motion values for tilt position
   const x = useMotionValue(0)
@@ -105,9 +107,9 @@ export default function PortfolioCard({
         
         {/* Card Image */}
         <div className="w-full h-36 rounded-2xl overflow-hidden border border-white/10 bg-white/[0.02] mb-3 relative group-hover:border-white/20 transition-all duration-550 flex items-center justify-center">
-          {image && !imgError ? (
+          {displayImage && !imgError ? (
             <img
-              src={image}
+              src={displayImage}
               alt={title}
               onError={() => setImgError(true)}
               className="w-full h-full object-cover scale-100 group-hover:scale-[1.05] group-hover:rotate-[0.5deg] transition-all duration-700 ease-out brightness-[0.85] group-hover:brightness-100"

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
-import { uploadFileToStorage } from "@/lib/storageUtils";
+import { uploadFileToStorage, normalizeImageUrl } from "@/lib/storageUtils";
 import Swal from "sweetalert2";
 
 import {
@@ -121,12 +121,13 @@ export default function ProjectDetailPage() {
 
   const handleAddCustomUrl = () => {
     if (!customUrlInput.trim()) return;
+    const normalized = normalizeImageUrl(customUrlInput.trim());
     const currentUrls = Array.isArray(form.image_urls)
       ? form.image_urls
       : form.image_url
       ? [form.image_url]
       : [];
-    const updatedUrls = [...currentUrls, customUrlInput.trim()];
+    const updatedUrls = [...currentUrls, normalized];
     setForm({
       ...form,
       image_urls: updatedUrls,

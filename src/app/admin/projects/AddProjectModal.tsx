@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { uploadFileToStorage } from "@/lib/storageUtils";
+import { uploadFileToStorage, normalizeImageUrl } from "@/lib/storageUtils";
 import { Upload, X, Link as LinkIcon, Plus } from "lucide-react";
 
 export default function AddProjectModal({
@@ -47,7 +47,8 @@ export default function AddProjectModal({
 
   const handleAddUrl = () => {
     if (!customUrl.trim()) return;
-    setUrlInputs((prev) => [...prev, customUrl.trim()]);
+    const normalized = normalizeImageUrl(customUrl.trim());
+    setUrlInputs((prev) => [...prev, normalized]);
     setCustomUrl("");
   };
 

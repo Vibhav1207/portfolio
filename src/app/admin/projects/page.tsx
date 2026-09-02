@@ -6,6 +6,7 @@ import Sidebar from "@/app/admin/Sidebar";
 import { Plus, Search, X, FolderGit2 } from "lucide-react";
 import AddProjectModal from "./AddProjectModal";
 import { supabase } from "@/lib/supabase";
+import { normalizeImageUrl } from "@/lib/storageUtils";
 
 export default function ProjectsPage() {
   const router = useRouter();
@@ -154,7 +155,7 @@ export default function ProjectsPage() {
                   <div className="w-full h-[150px] sm:h-[160px] lg:h-[140px] rounded-xl overflow-hidden bg-white/[0.03] mb-3 relative flex items-center justify-center">
                     {project.image_url ? (
                       <img
-                        src={project.image_url}
+                        src={normalizeImageUrl(project.image_url)}
                         alt={project.title}
                         className="w-full h-full object-cover hover:scale-105 transition duration-500"
                         onError={(e) => {
