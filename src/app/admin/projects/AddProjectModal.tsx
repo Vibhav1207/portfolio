@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Upload, X } from "lucide-react";
+import { uploadFileToStorage } from "@/lib/storageUtils";
+import { Upload, X, Link as LinkIcon, Plus } from "lucide-react";
 
 export default function AddProjectModal({
   isOpen,
@@ -22,6 +23,8 @@ export default function AddProjectModal({
 
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
+  const [urlInputs, setUrlInputs] = useState<string[]>([]);
+  const [customUrl, setCustomUrl] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
@@ -30,7 +33,7 @@ export default function AddProjectModal({
 
   const showToast = (msg: string) => {
     setToast(msg);
-    setTimeout(() => setToast(null), 2500);
+    setTimeout(() => setToast(null), 3000);
   };
 
   const removeImage = (index: number) => {
@@ -38,60 +41,62 @@ export default function AddProjectModal({
     setPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleImages = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const removeUrlInput = (index: number) => {
+    setUrlInputs((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleAddUrl = () => {
+    if (!customUrl.trim()) return;
+    setUrlInputs((prev) => [...prev, customUrl.trim()]);
+    setCustomUrl("");
+  };
+
+  const handleImages = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
     setImages((prev) => [...prev, ...files]);
-
-    const urls = files.map((file) =>
-      URL.createObjectURL(file)
-    );
-
+    const urls = files.map((file) => URL.createObjectURL(file));
     setPreviews((prev) => [...prev, ...urls]);
   };
 
-  const handleSubmit = async (
-    e: React.FormEvent
-  ) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!title.trim())
-      return showToast("Title wajib diisi");
+    if (!title.trim()) return showToast("Title wajib diisi");
+    if (!desc.trim()) return showToast("Description wajib diisi");
+    if (!tech.trim()) return showToast("Tech wajib diisi");
+    if (!features.trim()) return showToast("Features wajib diisi");
 
-    if (!desc.trim())
-      return showToast("Description wajib diisi");
-
-    if (!tech.trim())
-      return showToast("Tech wajib diisi");
-
-    if (!features.trim())
-      return showToast("Features wajib diisi");
-
-    if (images.length === 0)
-      return showToast("Upload minimal 1 gambar");
+    if (images.length === 0 && urlInputs.length === 0) {
+      return showToast("Upload minimal 1 gambar atau sertakan Image URL");
+    }
 
     setLoading(true);
 
     try {
-      const uploadedUrls: string[] = [];
+      const uploadedUrls: string[] = [...urlInputs];
+      let uploadFailedCount = 0;
 
       for (const image of images) {
-        const fileName = `${Date.now()}-${Math.random()}-${image.name}`;
+        const { publicUrl, error: uploadErr } = await uploadFileToStorage("projects", image);
 
-        const { error: uploadError } =
-          await supabase.storage
-            .from("projects")
-            .upload(fileName, image);
+        if (uploadErr || !publicUrl) {
+          uploadFailedCount++;
+          console.error("Upload error for file:", image.name, uploadErr);
+        } else {
+          uploadedUrls.push(publicUrl);
+        }
+      }
 
-        if (uploadError) continue;
+      if (images.length > 0 && uploadedUrls.length === 0) {
+        showToast("Gagal mengupload gambar. Periksa koneksi / bucket Supabase.");
+        setLoading(false);
+        return;
+      }
 
-        const { data } = supabase.storage
-          .from("projects")
-          .getPublicUrl(fileName);
-
-        uploadedUrls.push(data.publicUrl);
+      if (uploadFailedCount > 0) {
+        showToast(`${uploadFailedCount} gambar gagal diupload, melanjutkan gambar sisanya.`);
       }
 
       const { data, error } = await supabase
@@ -112,7 +117,7 @@ export default function AddProjectModal({
         .single();
 
       if (error) {
-        showToast("Gagal simpan");
+        showToast(`Gagal simpan project: ${error.message || "Error DB"}`);
         setLoading(false);
         return;
       }
@@ -127,10 +132,12 @@ export default function AddProjectModal({
       setFeatures("");
       setImages([]);
       setPreviews([]);
+      setUrlInputs([]);
+      setCustomUrl("");
 
       onClose();
-    } catch {
-      showToast("Terjadi error");
+    } catch (err: any) {
+      showToast(`Terjadi error: ${err?.message || "Unknown"}`);
     }
 
     setLoading(false);
@@ -213,22 +220,80 @@ export default function AddProjectModal({
             </div>
           </div>
 
-          {/* PREVIEW */}
-          {previews.length > 0 && (
+          {/* IMAGE URL INPUT */}
+          <div>
+            <label className="text-xs text-white/50 block mb-2">
+              Direct Image URL (Optional)
+            </label>
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <LinkIcon size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40" />
+                <input
+                  placeholder="https://example.com/image.jpg"
+                  value={customUrl}
+                  onChange={(e) => setCustomUrl(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleAddUrl();
+                    }
+                  }}
+                  className="w-full pl-9 pr-4 py-2.5 bg-[#111] border border-white/10 rounded-2xl outline-none text-xs"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={handleAddUrl}
+                className="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-2xl text-xs flex items-center gap-1 transition shrink-0"
+              >
+                <Plus size={14} /> Add URL
+              </button>
+            </div>
+          </div>
+
+          {/* PREVIEWS (FILES & URLS) */}
+          {(previews.length > 0 || urlInputs.length > 0) && (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {previews.map((img, i) => (
                 <div
-                  key={i}
-                  className="relative rounded-2xl overflow-hidden border border-white/10"
+                  key={`file-${i}`}
+                  className="relative rounded-2xl overflow-hidden border border-white/10 bg-[#111]"
                 >
                   <img
                     src={img}
+                    alt="Preview"
                     className="w-full h-24 object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLElement).style.display = "none";
+                    }}
                   />
-
+                  <span className="absolute bottom-1 left-1.5 text-[9px] bg-black/60 px-1.5 py-0.5 rounded text-white/70">File</span>
                   <button
                     type="button"
                     onClick={() => removeImage(i)}
+                    className="absolute top-2 right-2 bg-black/70 hover:bg-black rounded-full p-1.5"
+                  >
+                    <X size={10} />
+                  </button>
+                </div>
+              ))}
+              {urlInputs.map((url, i) => (
+                <div
+                  key={`url-${i}`}
+                  className="relative rounded-2xl overflow-hidden border border-white/10 bg-[#111]"
+                >
+                  <img
+                    src={url}
+                    alt="URL Preview"
+                    className="w-full h-24 object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLElement).style.display = "none";
+                    }}
+                  />
+                  <span className="absolute bottom-1 left-1.5 text-[9px] bg-blue-500/60 px-1.5 py-0.5 rounded text-white">URL</span>
+                  <button
+                    type="button"
+                    onClick={() => removeUrlInput(i)}
                     className="absolute top-2 right-2 bg-black/70 hover:bg-black rounded-full p-1.5"
                   >
                     <X size={10} />

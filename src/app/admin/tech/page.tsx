@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import Sidebar from "@/app/admin/Sidebar";
 import { supabase } from "@/lib/supabase";
-import { Plus, Trash2, Pencil, X, Upload } from "lucide-react";
+import { uploadFileToStorage } from "@/lib/storageUtils";
+import { Plus, Trash2, Pencil, X, Upload, Search } from "lucide-react";
 import Swal from "sweetalert2";
 
 export default function TechStackPage() {
   const [techStacks, setTechStacks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [open, setOpen] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
@@ -81,19 +83,21 @@ export default function TechStackPage() {
     let logoUrl = preview;
 
     if (logo) {
-      const fileName = `tech-${Date.now()}-${logo.name}`;
+      const { publicUrl, error: uploadError } = await uploadFileToStorage("tech-stack", logo);
 
-      const { error: uploadError } = await supabase.storage
-        .from("tech-stack")
-        .upload(fileName, logo);
-
-      if (!uploadError) {
-        const { data } = supabase.storage
-          .from("tech-stack")
-          .getPublicUrl(fileName);
-
-        logoUrl = data.publicUrl;
+      if (uploadError || !publicUrl) {
+        setSaving(false);
+        Swal.fire({
+          title: "Upload Failed",
+          text: uploadError?.message || "Failed to upload logo",
+          icon: "error",
+          background: "#111",
+          color: "#fff",
+        });
+        return;
       }
+
+      logoUrl = publicUrl;
     }
 
     if (editId) {
@@ -208,33 +212,68 @@ export default function TechStackPage() {
             </button>
           </div>
 
+          {/* SEARCH BAR */}
+          <div className="mb-6">
+            <div className="relative max-w-md">
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40" />
+              <input
+                type="text"
+                placeholder="Search tech stack by name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-9 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-xs outline-none focus:border-white/30 text-white"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+          </div>
+
           {/* GRID */}
           {loading ? (
             <div className="text-white/40 text-sm">
               Loading...
             </div>
-          ) : techStacks.length === 0 ? (
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] h-[220px] flex items-center justify-center text-white/35 text-sm">
-              No tech stack
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
-              {techStacks.map((item) => (
-                <div
-                  key={item.id}
-                  className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 hover:border-white/20 transition"
-                >
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/10 overflow-hidden flex items-center justify-center shrink-0">
-                      {item.logo_url ? (
-                        <img
-                          src={item.logo_url}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-white/[0.03]" />
-                      )}
-                    </div>
+          ) : (() => {
+            const filtered = techStacks.filter((item) =>
+              item.name?.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+
+            if (filtered.length === 0) {
+              return (
+                <div className="rounded-2xl border border-white/10 bg-white/[0.03] h-[220px] flex items-center justify-center text-white/35 text-sm">
+                  {searchQuery ? `No tech stack matching "${searchQuery}"` : "No tech stack"}
+                </div>
+              );
+            }
+
+            return (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
+                {filtered.map((item) => (
+                  <div
+                    key={item.id}
+                    className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 hover:border-white/20 transition"
+                  >
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/10 overflow-hidden flex items-center justify-center shrink-0">
+                        {item.logo_url ? (
+                          <img
+                            src={item.logo_url}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.target as HTMLElement).style.display = "none";
+                            }}
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-white/[0.03]" />
+                        )}
+                      </div>
 
                     <div className="flex gap-2 ml-3">
                       <button
@@ -259,7 +298,8 @@ export default function TechStackPage() {
                 </div>
               ))}
             </div>
-          )}
+          );
+        })()}
         </div>
       </main>
 

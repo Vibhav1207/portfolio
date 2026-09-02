@@ -390,6 +390,9 @@ export default function PortfolioDetailPage() {
                     }}
                     src={galleryImages[currentImage]}
                     onClick={() => setPreviewOpen(true)}
+                    onError={(e) => {
+                      (e.target as HTMLElement).style.display = "none";
+                    }}
                     className="w-full h-[220px] md:h-[250px] object-cover cursor-pointer"
                   />
 

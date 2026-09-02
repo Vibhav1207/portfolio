@@ -6,6 +6,7 @@ import {
   X,
   ChevronDown,
   ChevronUp,
+  Search,
 } from 'lucide-react'
 import usePortfolio from '@/hooks/usePortfolio'
 import PortfolioCard from './PortfolioCard'
@@ -43,6 +44,8 @@ export default function PortfolioShowcase() {
 
   const [showAllProjects, setShowAllProjects] =
     useState(false)
+
+  const [searchQuery, setSearchQuery] = useState('')
 
   const displayedProjects = showAllProjects
     ? projects
@@ -163,6 +166,29 @@ export default function PortfolioShowcase() {
           </div>
         </div>
 
+        {/* SEARCH BAR */}
+        <div className="flex justify-center mb-10">
+          <div className="relative w-full max-w-md">
+            <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />
+            <input
+              type="text"
+              placeholder={`Search ${activeTab === 'projects' ? 'projects by title, tech, description...' : activeTab === 'certificates' ? 'certificates by title, type...' : 'tech stack...'}`}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-11 pr-10 py-3 bg-white/[0.03] border border-white/10 rounded-full text-xs outline-none focus:border-white/25 transition-all text-white backdrop-blur-xl shadow-inner placeholder:text-white/35"
+              style={{ fontFamily: "'DM Mono', monospace" }}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+        </div>
+
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -172,66 +198,90 @@ export default function PortfolioShowcase() {
             transition={{ duration: 0.45 }}
           >
             {/* PROJECTS */}
-            {activeTab === 'projects' && (
-              <div className="space-y-8">
-                <motion.div
-                  layout
-                  transition={{
-                    layout: {
-                      duration: 0.75,
-                      ease: smoothEase,
-                    },
-                  }}
-                  className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 px-1"
-                >
-                  <AnimatePresence mode="popLayout">
-                    {!loading &&
-                      displayedProjects.map(
-                        (item, i) => (
-                          <motion.div
-                            key={item.id}
-                            layout
-                            initial={{
-                              opacity: 0,
-                              y: 40,
-                              scale: 0.96,
-                            }}
-                            animate={{
-                              opacity: 1,
-                              y: 0,
-                              scale: 1,
-                            }}
-                            exit={{
-                              opacity: 0,
-                              y: -30,
-                              scale: 0.95,
-                            }}
-                            transition={{
-                              duration: 0.55,
-                              delay: i * 0.04,
-                              ease: smoothEase,
-                            }}
-                          >
-                            <PortfolioCard
-                              index={i}
-                              title={item.title}
-                              description={
-                                item.description
-                              }
-                              image={item.image_url}
-                              live_url={item.live_url}
-                              id={item.id}
-                              technologies={item.technologies}
-                            />
-                          </motion.div>
-                        )
-                      )}
-                  </AnimatePresence>
-                </motion.div>
+            {activeTab === 'projects' && (() => {
+              const filtered = projects.filter((item) => {
+                const q = searchQuery.toLowerCase();
+                const techStr = Array.isArray(item.technologies)
+                  ? item.technologies.join(" ")
+                  : item.technologies || "";
+                return (
+                  item.title?.toLowerCase().includes(q) ||
+                  item.description?.toLowerCase().includes(q) ||
+                  techStr.toLowerCase().includes(q)
+                );
+              });
 
-                {/* SEE MORE / LESS */}
-                {!loading &&
-                  projects.length > 3 && (
+              const listToDisplay = searchQuery
+                ? filtered
+                : showAllProjects
+                ? projects
+                : projects.slice(0, 3);
+
+              return (
+                <div className="space-y-8">
+                  {filtered.length === 0 && searchQuery && (
+                    <div className="text-center py-12 text-white/40 text-sm border border-white/5 rounded-3xl bg-white/[0.02]">
+                      No projects found matching &ldquo;{searchQuery}&rdquo;
+                    </div>
+                  )}
+
+                  <motion.div
+                    layout
+                    transition={{
+                      layout: {
+                        duration: 0.75,
+                        ease: smoothEase,
+                      },
+                    }}
+                    className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 px-1"
+                  >
+                    <AnimatePresence mode="popLayout">
+                      {!loading &&
+                        listToDisplay.map(
+                          (item, i) => (
+                            <motion.div
+                              key={item.id}
+                              layout
+                              initial={{
+                                opacity: 0,
+                                y: 40,
+                                scale: 0.96,
+                              }}
+                              animate={{
+                                opacity: 1,
+                                y: 0,
+                                scale: 1,
+                              }}
+                              exit={{
+                                opacity: 0,
+                                y: -30,
+                                scale: 0.95,
+                              }}
+                              transition={{
+                                duration: 0.55,
+                                delay: i * 0.04,
+                                ease: smoothEase,
+                              }}
+                            >
+                              <PortfolioCard
+                                index={i}
+                                title={item.title}
+                                description={
+                                  item.description
+                                }
+                                image={item.image_url}
+                                live_url={item.live_url}
+                                id={item.id}
+                                technologies={item.technologies}
+                              />
+                            </motion.div>
+                          )
+                        )}
+                    </AnimatePresence>
+                  </motion.div>
+
+                  {/* SEE MORE / LESS */}
+                  {!loading && !searchQuery && projects.length > 3 && (
                     <motion.div
                       layout
                       transition={{
@@ -299,8 +349,9 @@ export default function PortfolioShowcase() {
                       </motion.button>
                     </motion.div>
                   )}
-              </div>
-            )}
+                </div>
+              );
+            })()}
 
             {/* CERTIFICATES */}
             {activeTab === 'certificates' && (() => {
@@ -310,9 +361,16 @@ export default function PortfolioShowcase() {
                 const bFeatured = b.is_featured ? 1 : 0;
                 return bFeatured - aFeatured;
               });
-              const filteredCertsList = sortedCerts.filter(
-                (item) => certFilter === 'all' || item.type === certFilter
-              );
+              const filteredCertsList = sortedCerts.filter((item) => {
+                const matchesType = certFilter === 'all' || item.type === certFilter;
+                const q = searchQuery.toLowerCase();
+                const matchesQuery = !searchQuery || (
+                  item.title?.toLowerCase().includes(q) ||
+                  item.subtitle?.toLowerCase().includes(q) ||
+                  item.type?.toLowerCase().includes(q)
+                );
+                return matchesType && matchesQuery;
+              });
               const displayedCerts = showAllCertificates
                 ? filteredCertsList
                 : filteredCertsList.slice(0, 3);
@@ -410,56 +468,71 @@ export default function PortfolioShowcase() {
 
             {/* TECH STACK */}
             {/* TECH STACK */}
-{activeTab === 'techstack' && (
-  <div className="min-h-[360px] flex justify-center">
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 max-w-5xl w-full">
-      {!loading &&
-        techStacks?.map((item, index) => (
-          <motion.div
-            key={item.id}
-            initial={{
-              opacity: 0,
-              scale: 0.9,
-              y: 20,
-            }}
-            whileInView={{
-              opacity: 1,
-              scale: 1,
-              y: 0,
-            }}
-            transition={{
-              duration: 0.45,
-              delay: index * 0.04,
-            }}
-            whileHover={{
-              y: -5,
-              scale: 1.04,
-            }}
-            className="group rounded-[24px] border border-white/10 bg-white/[0.04] backdrop-blur-xl flex flex-col items-center justify-center gap-3 h-[125px] w-[125px] mx-auto"
-          >
-            <div className="relative flex items-center justify-center">
-              {/* GLOW */}
-              <div className="absolute w-[70px] h-[70px] rounded-full bg-white/20 blur-2xl opacity-0 group-hover:opacity-100 transition duration-500" />
+{activeTab === 'techstack' && (() => {
+  const filteredTech = (techStacks || []).filter((item) =>
+    item.name?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-              {item.logo_url ? (
-                <img
-                  src={item.logo_url}
-                  alt={item.name}
-                  className="relative z-10 w-[56px] h-[56px] object-contain"
-                />
-              ) : (
-                <div className="relative z-10 w-[56px] h-[56px] rounded-2xl bg-white/10" />
-              )}
-            </div>
+  return (
+    <div className="min-h-[360px] flex flex-col items-center">
+      {filteredTech.length === 0 && searchQuery && (
+        <div className="text-center py-12 text-white/40 text-sm border border-white/5 rounded-3xl bg-white/[0.02] w-full max-w-md">
+          No tech stack found matching &ldquo;{searchQuery}&rdquo;
+        </div>
+      )}
 
-            <p className="text-[11px] text-white/80 text-center leading-tight px-2 line-clamp-1">
-              {item.name}
-            </p>
-          </motion.div>
-        ))}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 max-w-5xl w-full">
+        {!loading &&
+          filteredTech.map((item, index) => (
+            <motion.div
+              key={item.id}
+              initial={{
+                opacity: 0,
+                scale: 0.9,
+                y: 20,
+              }}
+              whileInView={{
+                opacity: 1,
+                scale: 1,
+                y: 0,
+              }}
+              transition={{
+                duration: 0.45,
+                delay: index * 0.04,
+              }}
+              whileHover={{
+                y: -5,
+                scale: 1.04,
+              }}
+              className="group rounded-[24px] border border-white/10 bg-white/[0.04] backdrop-blur-xl flex flex-col items-center justify-center gap-3 h-[125px] w-[125px] mx-auto"
+            >
+              <div className="relative flex items-center justify-center">
+                {/* GLOW */}
+                <div className="absolute w-[70px] h-[70px] rounded-full bg-white/20 blur-2xl opacity-0 group-hover:opacity-100 transition duration-500" />
+
+                {item.logo_url ? (
+                  <img
+                    src={item.logo_url}
+                    alt={item.name}
+                    className="relative z-10 w-[56px] h-[56px] object-contain"
+                    onError={(e) => {
+                      (e.target as HTMLElement).style.display = "none";
+                    }}
+                  />
+                ) : (
+                  <div className="relative z-10 w-[56px] h-[56px] rounded-2xl bg-white/10" />
+                )}
+              </div>
+
+              <p className="text-[11px] text-white/80 text-center leading-tight px-2 line-clamp-1">
+                {item.name}
+              </p>
+            </motion.div>
+          ))}
+      </div>
     </div>
-  </div>
-)}
+  );
+})()}
           </motion.div>
         </AnimatePresence>
       </section>

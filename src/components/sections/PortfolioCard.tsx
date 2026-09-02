@@ -1,10 +1,11 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { motion, useMotionValue, useSpring } from 'framer-motion'
 import {
   ArrowRight,
   ArrowUpRight,
+  FolderGit2,
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
@@ -29,6 +30,7 @@ export default function PortfolioCard({
 }: Props) {
   const router = useRouter()
   const cardRef = useRef<HTMLDivElement>(null)
+  const [imgError, setImgError] = useState(false)
 
   // Motion values for tilt position
   const x = useMotionValue(0)
@@ -102,17 +104,21 @@ export default function PortfolioCard({
       <div className="h-full flex flex-col relative z-10">
         
         {/* Card Image */}
-        <div className="w-full h-36 rounded-2xl overflow-hidden border border-white/10 bg-white/[0.02] mb-3 relative group-hover:border-white/20 transition-all duration-550">
-          {image ? (
+        <div className="w-full h-36 rounded-2xl overflow-hidden border border-white/10 bg-white/[0.02] mb-3 relative group-hover:border-white/20 transition-all duration-550 flex items-center justify-center">
+          {image && !imgError ? (
             <img
               src={image}
               alt={title}
+              onError={() => setImgError(true)}
               className="w-full h-full object-cover scale-100 group-hover:scale-[1.05] group-hover:rotate-[0.5deg] transition-all duration-700 ease-out brightness-[0.85] group-hover:brightness-100"
             />
           ) : (
-            <div className="w-full h-full bg-white/[0.03]" />
+            <div className="w-full h-full bg-gradient-to-br from-white/[0.05] to-white/[0.01] flex flex-col items-center justify-center gap-2 text-white/30">
+              <FolderGit2 size={32} />
+              <span className="text-[11px] font-medium tracking-wide uppercase" style={{ fontFamily: "'DM Mono', monospace" }}>{title.substring(0, 15)}</span>
+            </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-75 group-hover:opacity-20 transition-opacity duration-550" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-75 group-hover:opacity-20 transition-opacity duration-550 pointer-events-none" />
         </div>
 
         {/* Title */}

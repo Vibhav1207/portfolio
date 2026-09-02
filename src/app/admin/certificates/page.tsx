@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Trash2, Pencil, X, Upload, Eye, EyeOff, Star } from "lucide-react";
+import { Plus, Trash2, Pencil, X, Upload, Eye, EyeOff, Star, Search } from "lucide-react";
 import Sidebar from "@/app/admin/Sidebar";
 import { supabase } from "@/lib/supabase";
+import { uploadFileToStorage } from "@/lib/storageUtils";
 import Swal from "sweetalert2";
 
 export default function CertificatesPage() {
   const [certificates, setCertificates] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [open, setOpen] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
@@ -94,17 +96,13 @@ export default function CertificatesPage() {
     let imageUrl = preview;
 
     if (image) {
-      const fileName = `certificate-${Date.now()}-${image.name}`;
+      const { publicUrl, error: uploadError } = await uploadFileToStorage("certificates", image);
 
-      const { error: uploadError } = await supabase.storage
-        .from("certificates")
-        .upload(fileName, image);
-
-      if (uploadError) {
+      if (uploadError || !publicUrl) {
         setSaving(false);
         Swal.fire({
           title: "Upload Failed",
-          text: uploadError.message,
+          text: uploadError?.message || "Failed to upload image",
           icon: "error",
           background: "#111",
           color: "#fff",
@@ -112,11 +110,7 @@ export default function CertificatesPage() {
         return;
       }
 
-      const { data } = supabase.storage
-        .from("certificates")
-        .getPublicUrl(fileName);
-
-      imageUrl = data.publicUrl;
+      imageUrl = publicUrl;
     }
 
     let error;
@@ -270,31 +264,72 @@ export default function CertificatesPage() {
             </button>
           </div>
 
+          {/* SEARCH BAR */}
+          <div className="mb-6">
+            <div className="relative max-w-md">
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40" />
+              <input
+                type="text"
+                placeholder="Search certificates by title, subtitle, or type..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-9 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-xs outline-none focus:border-white/30 text-white"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+          </div>
+
           {/* CONTENT */}
           {loading ? (
             <div className="text-white/50 text-sm">Loading certificates...</div>
-          ) : certificates.length === 0 ? (
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] h-[240px] flex items-center justify-center text-white/35">
-              No certificates found
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5 pb-6">
-              {certificates.map((item) => (
-                <div
-                  key={item.id}
-                  className="border border-white/10 bg-white/[0.03] rounded-2xl p-4 hover:border-white/25 hover:-translate-y-1 transition-all duration-300 flex flex-col"
-                >
-                  {/* IMAGE */}
-                  <div className="w-full h-[150px] rounded-xl overflow-hidden bg-white/[0.03] mb-4">
-                    {item.image_url ? (
-                      <img
-                        src={item.image_url}
-                        className="w-full h-full object-cover hover:scale-105 transition duration-500"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-white/[0.03]" />
-                    )}
-                  </div>
+          ) : (() => {
+            const filteredCerts = certificates.filter((item) => {
+              const q = searchQuery.toLowerCase();
+              return (
+                item.title?.toLowerCase().includes(q) ||
+                item.subtitle?.toLowerCase().includes(q) ||
+                item.type?.toLowerCase().includes(q) ||
+                item.status?.toLowerCase().includes(q)
+              );
+            });
+
+            if (filteredCerts.length === 0) {
+              return (
+                <div className="rounded-2xl border border-white/10 bg-white/[0.03] h-[240px] flex items-center justify-center text-white/35">
+                  {searchQuery ? `No certificates matching "${searchQuery}"` : "No certificates found"}
+                </div>
+              );
+            }
+
+            return (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5 pb-6">
+                {filteredCerts.map((item) => (
+                  <div
+                    key={item.id}
+                    className="border border-white/10 bg-white/[0.03] rounded-2xl p-4 hover:border-white/25 hover:-translate-y-1 transition-all duration-300 flex flex-col"
+                  >
+                    {/* IMAGE */}
+                    <div className="w-full h-[150px] rounded-xl overflow-hidden bg-white/[0.03] mb-4">
+                      {item.image_url ? (
+                        <img
+                          src={item.image_url}
+                          alt={item.title}
+                          className="w-full h-full object-cover hover:scale-105 transition duration-500"
+                          onError={(e) => {
+                            (e.target as HTMLElement).style.display = "none";
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-white/[0.03]" />
+                      )}
+                    </div>
 
                   {/* TITLE + TYPE */}
                   <div className="flex items-start justify-between gap-2 mb-1">
@@ -374,11 +409,12 @@ export default function CertificatesPage() {
                     >
                       <Trash2 size={15} />
                     </button>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            );
+          })()}
         </div>
       </main>
 

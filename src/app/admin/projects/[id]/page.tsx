@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
+import { uploadFileToStorage } from "@/lib/storageUtils";
 import Swal from "sweetalert2";
 
 import {
@@ -17,6 +18,8 @@ import {
   ChevronRight,
   X,
   Upload,
+  Link as LinkIcon,
+  Plus,
 } from "lucide-react";
 
 export default function ProjectDetailPage() {
@@ -31,6 +34,7 @@ export default function ProjectDetailPage() {
 
   const [newImages, setNewImages] = useState<File[]>([]);
   const [newPreviews, setNewPreviews] = useState<string[]>([]);
+  const [customUrlInput, setCustomUrlInput] = useState("");
   const [uploading, setUploading] = useState(false);
 
   const removeExistingImage = (index: number) => {
@@ -115,29 +119,49 @@ export default function ProjectDetailPage() {
   }
 };
 
+  const handleAddCustomUrl = () => {
+    if (!customUrlInput.trim()) return;
+    const currentUrls = Array.isArray(form.image_urls)
+      ? form.image_urls
+      : form.image_url
+      ? [form.image_url]
+      : [];
+    const updatedUrls = [...currentUrls, customUrlInput.trim()];
+    setForm({
+      ...form,
+      image_urls: updatedUrls,
+      image_url: updatedUrls[0] || null,
+    });
+    setCustomUrlInput("");
+  };
+
   const handleUpdate = async () => {
     setUploading(true);
     const uploadedUrls: string[] = [];
+    let uploadFailCount = 0;
     try {
       for (const image of newImages) {
-        const fileName = `${Date.now()}-${Math.random()}-${image.name}`;
-        const { error: uploadError } = await supabase.storage
-          .from("projects")
-          .upload(fileName, image);
+        const { publicUrl, error: uploadError } = await uploadFileToStorage("projects", image);
         
-        if (uploadError) {
+        if (uploadError || !publicUrl) {
+          uploadFailCount++;
           console.error("Upload error:", uploadError);
-          continue;
+        } else {
+          uploadedUrls.push(publicUrl);
         }
-
-        const { data } = supabase.storage
-          .from("projects")
-          .getPublicUrl(fileName);
-        
-        uploadedUrls.push(data.publicUrl);
       }
     } catch (uploadErr) {
       console.error("Storage upload exception:", uploadErr);
+    }
+
+    if (uploadFailCount > 0) {
+      Swal.fire({
+        title: "Perhatian",
+        text: `${uploadFailCount} gambar gagal diupload. Menyimpan gambar sisanya.`,
+        icon: "warning",
+        background: "#101010",
+        color: "#fff",
+      });
     }
 
     const existingUrls = Array.isArray(form.image_urls)
@@ -188,7 +212,7 @@ export default function ProjectDetailPage() {
     } else {
       Swal.fire({
         title: "Gagal",
-        text: "Update project gagal.",
+        text: "Update project gagal: " + (error.message || ""),
         icon: "error",
         background: "#101010",
         color: "#fff",
@@ -529,9 +553,9 @@ export default function ProjectDetailPage() {
               )}
 
               {/* UPLOAD TRIGGER */}
-              <div>
-                <label className="border border-dashed border-white/15 rounded-2xl bg-[#111] hover:bg-[#151515] transition flex flex-col items-center justify-center p-6 cursor-pointer text-center">
-                  <Upload size={18} className="mb-2 text-white/50" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label className="border border-dashed border-white/15 rounded-2xl bg-[#111] hover:bg-[#151515] transition flex flex-col items-center justify-center p-4 cursor-pointer text-center">
+                  <Upload size={18} className="mb-1 text-white/50" />
                   <span className="text-xs text-white/60">Upload New Images</span>
                   <input
                     type="file"
@@ -540,6 +564,31 @@ export default function ProjectDetailPage() {
                     onChange={handleNewImages}
                   />
                 </label>
+
+                <div className="border border-white/10 rounded-2xl bg-[#111] p-3 flex flex-col justify-between">
+                  <span className="text-xs text-white/50 mb-1 block">Add Image via URL</span>
+                  <div className="flex gap-2">
+                    <input
+                      placeholder="https://..."
+                      value={customUrlInput}
+                      onChange={(e) => setCustomUrlInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleAddCustomUrl();
+                        }
+                      }}
+                      className="w-full bg-[#181818] border border-white/10 rounded-xl px-3 py-1.5 text-xs outline-none text-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddCustomUrl}
+                      className="px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-xl text-xs flex items-center gap-1 transition shrink-0"
+                    >
+                      <Plus size={12} /> Add
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           ) : (
