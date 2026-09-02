@@ -749,7 +749,7 @@ __      ___   ___   _  _    _    __   __
 
             <div className="flex gap-4 mt-8 flex-wrap">
               <a
-                href="https://drive.google.com/file/d/10y2lag7iIEsKVJRvzrW9NHa0Lg7HnEH2/view?usp=sharing"
+                href="https://drive.google.com/file/d/1Kx-BXrROdvrd4OoC5ZbsqnoCagLIxI3d/view?usp=sharing"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="no-underline inline-block"
